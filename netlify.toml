@@ -1,0 +1,6 @@
+[build]
+  command = "node scripts/build-netlify.mjs"
+  publish = "netlify-site"
+
+[build.environment]
+  NODE_VERSION = "24"

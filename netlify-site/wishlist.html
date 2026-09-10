@@ -1,0 +1,20 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wishlist | KASHORIA</title><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/kashoria-upgrade.css"><link rel="stylesheet" href="css/kashoria-features.css"><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"></head><body>
+<header class="k-site-header">
+  <a class="k-site-brand" href="index.html" aria-label="KASHORIA Home"><img src="images/logo.png" class="k-site-logo" alt="KASHORIA"></a>
+  <nav class="k-site-nav" aria-label="Main navigation">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="contact.html">Contact</a><a href="custom-order.html">Custom</a>
+    <a href="wishlist.html">Wishlist ♡ <span data-wishlist-count>0</span></a>
+    <a href="cart.html">Cart 🛒 <span data-cart-count>0</span></a>
+    <a href="login.html">Login</a>
+  </nav>
+</header>
+<section class="k-page-hero"><div class="eyebrow">Saved with love</div><h1>Your Wishlist</h1><p>Keep your favourites here until you're ready.</p></section><main class="k-cart-page"><div id="wish-grid" class="k-product-grid"></div></main>
+<script src="js/store.js"></script><script src="js/cart.js"></script><script src="js/wishlist.js"></script><script src="js/kashoria-enhancements.js"></script><script>
+const box=document.getElementById("wish-grid");
+function render(){const w=JSON.parse(localStorage.getItem("wishlist")||"[]");if(!w.length){box.innerHTML='<div class="k-panel" style="grid-column:1/-1;text-align:center;padding:55px"><div class="k-empty-icon">♡</div><h2>Nothing saved yet</h2><p>Tap the heart on a product to save it.</p><a href="shop.html" class="k-primary-btn">Explore Products</a></div>';return;}box.innerHTML=w.map((p,i)=>`<article class="k-product-card"><div class="k-product-image"><img src="${p.image}" alt="${p.name}"><button class="k-wish" onclick="removeFromWishlist(${i})">♥</button></div><div class="k-product-body"><h3>${p.name}</h3><div class="k-product-price">₹${p.price}</div><div class="k-product-actions"><button class="k-view" onclick="removeFromWishlist(${i})">Remove</button><button class="k-add" onclick="addToCart('${p.name.replace(/'/g,"\'")}',${p.price},'${p.image.replace(/'/g,"\'")}')">Add to Cart</button></div></div></article>`).join("");}
+render();
+</script><script src="js/kashoria-all-features.js"></script><script src="js/fix-storefront.js"></script>
+
+<script src="js/config.js"></script><script src="js/kashoria-master-v3.js"></script></body></html>

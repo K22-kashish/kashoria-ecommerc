@@ -1,0 +1,1270 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KASHORIA | Handmade with Love</title>
+<link href="css/style.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&amp;family=Cormorant+Garamond:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<style>
+.category-status{margin:18px auto 0;text-align:center;font-size:14px;color:#8b6875;font-weight:500;}
+.product-card{transition:opacity .25s ease,transform .25s ease;}
+.product-card img{cursor:pointer;}
+</style>
+<style>
+/* ================================================
+   KASHORIA SOCIAL MEDIA BUTTONS
+================================================ */
+.social-support {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+}
+
+.social-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-width: 145px;
+    padding: 12px 20px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease;
+}
+
+.social-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,.12);
+}
+
+.social-btn svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.instagram-btn {
+    color: #fff;
+    background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+}
+
+.whatsapp-btn {
+    color: #fff;
+    background: #25D366;
+}
+
+.floating-social {
+    position: fixed;
+    right: 20px;
+    bottom: 22px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+}
+
+.floating-social-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(0,0,0,.18);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.floating-social-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 9px 24px rgba(0,0,0,.24);
+}
+
+.floating-social-btn svg {
+    width: 25px;
+    height: 25px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.floating-instagram {
+    background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+}
+
+.floating-whatsapp {
+    background: #25D366;
+}
+
+@media (max-width: 600px) {
+    .social-btn {
+        min-width: 130px;
+        padding: 11px 16px;
+    }
+
+    .floating-social {
+        right: 12px;
+        bottom: 15px;
+    }
+
+    .floating-social-btn {
+        width: 46px;
+        height: 46px;
+    }
+
+    .floating-social-btn svg {
+        width: 22px;
+        height: 22px;
+    }
+}
+</style>
+<link href="css/kashoria-upgrade.css" rel="stylesheet"/><link href="css/kashoria-features.css" rel="stylesheet"/></head>
+<body>
+<!-- ==================================================
+     HEADER
+================================================== -->
+<header class="k-site-header">
+<a aria-label="KASHORIA Home" class="k-site-brand" href="index.html"><img alt="KASHORIA" class="k-site-logo" src="images/logo.png"/></a>
+<nav aria-label="Main navigation" class="k-site-nav">
+<a href="index.html">Home</a>
+<a href="shop.html">Shop</a>
+<a href="contact.html">Contact</a><a href="custom-order.html">Custom</a>
+<a href="wishlist.html">Wishlist ♡ <span data-wishlist-count="">0</span></a>
+<a href="cart.html">Cart 🛒 <span data-cart-count="">0</span></a>
+<a href="login.html">Login</a>
+</nav>
+</header>
+<!-- ==================================================
+     HERO
+================================================== -->
+<section class="hero">
+<div class="hero-text">
+<h1>
+            Handmade with Love ♡
+        </h1>
+<p>
+            Beautiful crochet creations crafted with care,
+            bringing warmth, charm and happiness into your life.
+        </p>
+<button class="shop-btn" onclick="document.getElementById('shop').scrollIntoView()">
+            Shop Now →
+        </button>
+</div>
+</section>
+<!-- ==================================================
+     SHOP / SEARCH / CATEGORY
+================================================== -->
+<section class="shop" id="shop">
+<h2>
+        Shop Our Collection
+    </h2>
+<!-- Search -->
+<div class="search-box">
+<input id="search" oninput="searchProducts()" placeholder="Search crochet products..." type="text"/>
+</div>
+<!-- Categories -->
+<div class="categories">
+<button class="active" onclick="filterCategory('all', this)">All</button>
+<button onclick="filterCategory('phonecharms', this)">Phone Charms</button>
+<button onclick="filterCategory('hairaccessories', this)">Hair Accessories</button>
+<button onclick="filterCategory('keychains', this)">Keychains</button>
+<button onclick="filterCategory('bouquets', this)">Bouquets</button>
+<button onclick="filterCategory('bagcharms', this)">Bag Charms</button>
+<button onclick="filterCategory('phonecases', this)">Phone Cases</button>
+<button onclick="filterCategory('flowers', this)">Flowers &amp; Floral Gifts</button>
+</div>
+<div style="text-align:center;margin:12px 0 24px"><a class="k-primary-btn" href="shop.html" style="display:inline-block;text-decoration:none">Browse all 88 products →</a></div>
+<div aria-live="polite" class="category-status" id="categoryStatus">
+        Showing all products
+    </div>
+</section>
+<!-- ==================================================
+     PRODUCTS
+================================================== -->
+<section class="featured">
+<h2>Complete KASHORIA Collection</h2>
+<div class="product-grid" id="productGrid">
+<div class="product-card" data-category="keychains" data-name="3 Heart Keychain" data-product-id="3-heart-keychain">
+<img alt="3 Heart Keychain" loading="lazy" onclick="openProduct('3-heart-keychain')" src="images/3 heart keychain.jpg"/>
+<h3>3 Heart Keychain</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('3 Heart Keychain', 149, 'images/3 heart keychain.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('3 Heart Keychain', 149, 'images/3 heart keychain.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="phonecharms" data-name="Heart Phone Charm" data-product-id="heart-phone-charm">
+<img alt="Heart Phone Charm" loading="lazy" onclick="openProduct('heart-phone-charm')" src="images/3 heart pc.jpg"/>
+<h3>Heart Phone Charm</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Heart Phone Charm', 149, 'images/3 heart pc.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Heart Phone Charm', 149, 'images/3 heart pc.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="phonecharms" data-name="3 Heart Phone Charm" data-product-id="3-heart-phone-charm">
+<img alt="3 Heart Phone Charm" loading="lazy" onclick="openProduct('3-heart-phone-charm')" src="images/3 heart phone charm.jpg"/>
+<h3>3 Heart Phone Charm</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('3 Heart Phone Charm', 149, 'images/3 heart phone charm.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('3 Heart Phone Charm', 149, 'images/3 heart phone charm.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="4 Heart Keychain" data-product-id="4-heart-keychain">
+<img alt="4 Heart Keychain" loading="lazy" onclick="openProduct('4-heart-keychain')" src="images/4 heart keychain.jpg"/>
+<h3>4 Heart Keychain</h3>
+<p class="price">₹169</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('4 Heart Keychain', 169, 'images/4 heart keychain.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('4 Heart Keychain', 169, 'images/4 heart keychain.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="phonecharms" data-name="5 Heart Phone Charm" data-product-id="5-heart-phone-charm">
+<img alt="5 Heart Phone Charm" loading="lazy" onclick="openProduct('5-heart-phone-charm')" src="images/5 heart phone charm.jpeg"/>
+<h3>5 Heart Phone Charm</h3>
+<p class="price">₹199</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('5 Heart Phone Charm', 199, 'images/5 heart phone charm.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('5 Heart Phone Charm', 199, 'images/5 heart phone charm.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="phonecharms" data-name="Pink Heart Phone Charm" data-product-id="pink-heart-phone-charm">
+<img alt="Pink Heart Phone Charm" loading="lazy" onclick="openProduct('pink-heart-phone-charm')" src="images/5 heart pink phone charm.jpeg"/>
+<h3>Pink Heart Phone Charm</h3>
+<p class="price">₹199</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Pink Heart Phone Charm', 199, 'images/5 heart pink phone charm.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Pink Heart Phone Charm', 199, 'images/5 heart pink phone charm.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="phonecharms" data-name="5 Heart Purple Phone Charm" data-product-id="5-heart-purple-phone-charm">
+<img alt="5 Heart Purple Phone Charm" loading="lazy" onclick="openProduct('5-heart-purple-phone-charm')" src="images/5 heart purple phone charm.jpeg"/>
+<h3>5 Heart Purple Phone Charm</h3>
+<p class="price">₹199</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('5 Heart Purple Phone Charm', 199, 'images/5 heart purple phone charm.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('5 Heart Purple Phone Charm', 199, 'images/5 heart purple phone charm.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Bee Keychain" data-product-id="bee-keychain">
+<img alt="Bee Keychain" loading="lazy" onclick="openProduct('bee-keychain')" src="images/bee keychain.jpeg"/>
+<h3>Bee Keychain</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Bee Keychain', 149, 'images/bee keychain.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Bee Keychain', 149, 'images/bee keychain.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="phonecharms" data-name="Black 3 Heart Phone Charm" data-product-id="black-3-heart-phone-charm">
+<img alt="Black 3 Heart Phone Charm" loading="lazy" onclick="openProduct('black-3-heart-phone-charm')" src="images/black 3 heart pc.jpg"/>
+<h3>Black 3 Heart Phone Charm</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Black 3 Heart Phone Charm', 149, 'images/black 3 heart pc.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Black 3 Heart Phone Charm', 149, 'images/black 3 heart pc.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="bagcharms" data-name="Blue Butterfly Bag Charm" data-product-id="blue-butterfly-bag-charm">
+<img alt="Blue Butterfly Bag Charm" loading="lazy" onclick="openProduct('blue-butterfly-bag-charm')" src="images/blue butterfly bag charm.jpg"/>
+<h3>Blue Butterfly Bag Charm</h3>
+<p class="price">₹219</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Blue Butterfly Bag Charm', 219, 'images/blue butterfly bag charm.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Blue Butterfly Bag Charm', 219, 'images/blue butterfly bag charm.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="phonecases" data-name="Blue Heart Phone Cover" data-product-id="blue-heart-phone-cover">
+<img alt="Blue Heart Phone Cover" loading="lazy" onclick="openProduct('blue-heart-phone-cover')" src="images/blue heart phone cover.jpg"/>
+<h3>Blue Heart Phone Cover</h3>
+<p class="price">₹399</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Blue Heart Phone Cover', 399, 'images/blue heart phone cover.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Blue Heart Phone Cover', 399, 'images/blue heart phone cover.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Blue Penguin Keychain" data-product-id="blue-penguin-keychain">
+<img alt="Blue Penguin Keychain" loading="lazy" onclick="openProduct('blue-penguin-keychain')" src="images/blue penguin keychain.jpg"/>
+<h3>Blue Penguin Keychain</h3>
+<p class="price">₹399</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Blue Penguin Keychain', 399, 'images/blue penguin keychain.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Blue Penguin Keychain', 399, 'images/blue penguin keychain.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="phonecharms" data-name="Blue Phone Charm" data-product-id="blue-phone-charm">
+<img alt="Blue Phone Charm" loading="lazy" onclick="openProduct('blue-phone-charm')" src="images/blue phone charm.jpeg"/>
+<h3>Blue Phone Charm</h3>
+<p class="price">₹129</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Blue Phone Charm', 129, 'images/blue phone charm.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Blue Phone Charm', 129, 'images/blue phone charm.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Bouquet Keychain" data-product-id="bouquet-keychain">
+<img alt="Bouquet Keychain" loading="lazy" onclick="openProduct('bouquet-keychain')" src="images/bouquet keychain.jpeg"/>
+<h3>Bouquet Keychain</h3>
+<p class="price">₹349</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Bouquet Keychain', 349, 'images/bouquet keychain.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Bouquet Keychain', 349, 'images/bouquet keychain.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="bouquets" data-name="Bouquet" data-product-id="bouquet">
+<img alt="Bouquet" loading="lazy" onclick="openProduct('bouquet')" src="images/bouquet.jpeg"/>
+<h3>Bouquet</h3>
+<p class="price">₹299</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Bouquet', 299, 'images/bouquet.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Bouquet', 299, 'images/bouquet.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="hairaccessories" data-name="Bow Hair Clip" data-product-id="bow-hair-clip">
+<img alt="Bow Hair Clip" loading="lazy" onclick="openProduct('bow-hair-clip')" src="images/bow hair clip.jpg"/>
+<h3>Bow Hair Clip</h3>
+<p class="price">₹99</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Bow Hair Clip', 99, 'images/bow hair clip.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Bow Hair Clip', 99, 'images/bow hair clip.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Bow Keychain" data-product-id="bow-keychain">
+<img alt="Bow Keychain" loading="lazy" onclick="openProduct('bow-keychain')" src="images/bow keychain.jpeg"/>
+<h3>Bow Keychain</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Bow Keychain', 149, 'images/bow keychain.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Bow Keychain', 149, 'images/bow keychain.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Bow Keychain" data-product-id="bow-keychain-2">
+<img alt="Bow Keychain" loading="lazy" onclick="openProduct('bow-keychain-2')" src="images/bow keychain.jpg"/>
+<h3>Bow Keychain</h3>
+<p class="price">₹129</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Bow Keychain', 129, 'images/bow keychain.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Bow Keychain', 129, 'images/bow keychain.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="phonecases" data-name="Bow Phone Case" data-product-id="bow-phone-case">
+<img alt="Bow Phone Case" loading="lazy" onclick="openProduct('bow-phone-case')" src="images/bow phone case.jpeg"/>
+<h3>Bow Phone Case</h3>
+<p class="price">₹399</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Bow Phone Case', 399, 'images/bow phone case.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Bow Phone Case', 399, 'images/bow phone case.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="bagcharms" data-name="Butterfly Bag Charm 2" data-product-id="butterfly-bag-charm-2">
+<img alt="Butterfly Bag Charm 2" loading="lazy" onclick="openProduct('butterfly-bag-charm-2')" src="images/butterfly bag charm 2.jpg"/>
+<h3>Butterfly Bag Charm 2</h3>
+<p class="price">₹219</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Butterfly Bag Charm 2', 219, 'images/butterfly bag charm 2.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Butterfly Bag Charm 2', 219, 'images/butterfly bag charm 2.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="bagcharms" data-name="Butterfly Bag Charm" data-product-id="butterfly-bag-charm">
+<img alt="Butterfly Bag Charm" loading="lazy" onclick="openProduct('butterfly-bag-charm')" src="images/butterfly bag charm.jpg"/>
+<h3>Butterfly Bag Charm</h3>
+<p class="price">₹219</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Butterfly Bag Charm', 219, 'images/butterfly bag charm.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Butterfly Bag Charm', 219, 'images/butterfly bag charm.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Cake Keychain" data-product-id="cake-keychain">
+<img alt="Cake Keychain" loading="lazy" onclick="openProduct('cake-keychain')" src="images/cake keychain.jpeg"/>
+<h3>Cake Keychain</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Cake Keychain', 149, 'images/cake keychain.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Cake Keychain', 149, 'images/cake keychain.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="bagcharms" data-name="Cherry Bagcharm" data-product-id="cherry-bagcharm">
+<img alt="Cherry Bagcharm" loading="lazy" onclick="openProduct('cherry-bagcharm')" src="images/cherry bagcharm.jpeg"/>
+<h3>Cherry Bagcharm</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Cherry Bagcharm', 149, 'images/cherry bagcharm.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Cherry Bagcharm', 149, 'images/cherry bagcharm.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Cherry Blooms Keychains" data-product-id="cherry-blooms-keychains">
+<img alt="Cherry Blooms Keychains" loading="lazy" onclick="openProduct('cherry-blooms-keychains')" src="images/cherry blooms keychains.jpg.jpeg"/>
+<h3>Cherry Blooms Keychains</h3>
+<p class="price">₹199</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Cherry Blooms Keychains', 199, 'images/cherry blooms keychains.jpg.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Cherry Blooms Keychains', 199, 'images/cherry blooms keychains.jpg.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Cherry Keychain" data-product-id="cherry-keychain">
+<img alt="Cherry Keychain" loading="lazy" onclick="openProduct('cherry-keychain')" src="images/cherry keychain.jpg"/>
+<h3>Cherry Keychain</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Cherry Keychain', 149, 'images/cherry keychain.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Cherry Keychain', 149, 'images/cherry keychain.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Coffee Keychain" data-product-id="coffee-keychain">
+<img alt="Coffee Keychain" loading="lazy" onclick="openProduct('coffee-keychain')" src="images/coffee keychain.jpeg"/>
+<h3>Coffee Keychain</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Coffee Keychain', 149, 'images/coffee keychain.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Coffee Keychain', 149, 'images/coffee keychain.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Daisy Keychain" data-product-id="daisy-keychain">
+<img alt="Daisy Keychain" loading="lazy" onclick="openProduct('daisy-keychain')" src="images/daisy keychain.jpg"/>
+<h3>Daisy Keychain</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Daisy Keychain', 149, 'images/daisy keychain.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Daisy Keychain', 149, 'images/daisy keychain.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Daisy Keychain2" data-product-id="daisy-keychain2">
+<img alt="Daisy Keychain2" loading="lazy" onclick="openProduct('daisy-keychain2')" src="images/daisy keychain2.jpeg"/>
+<h3>Daisy Keychain2</h3>
+<p class="price">₹99</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Daisy Keychain2', 99, 'images/daisy keychain2.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Daisy Keychain2', 99, 'images/daisy keychain2.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Evil Eye Keychain" data-product-id="evil-eye-keychain">
+<img alt="Evil Eye Keychain" loading="lazy" onclick="openProduct('evil-eye-keychain')" src="images/evil eye keychain.jpeg"/>
+<h3>Evil Eye Keychain</h3>
+<p class="price">₹129</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Evil Eye Keychain', 129, 'images/evil eye keychain.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Evil Eye Keychain', 129, 'images/evil eye keychain.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="phonecharms" data-name="Evil Eye Phone Charm" data-product-id="evil-eye-phone-charm">
+<img alt="Evil Eye Phone Charm" loading="lazy" onclick="openProduct('evil-eye-phone-charm')" src="images/evil eye phone charm.jpeg"/>
+<h3>Evil Eye Phone Charm</h3>
+<p class="price">₹89</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Evil Eye Phone Charm', 89, 'images/evil eye phone charm.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Evil Eye Phone Charm', 89, 'images/evil eye phone charm.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="bouquets" data-name="Flower Bouquet Keychains" data-product-id="flower-bouquet-keychains">
+<img alt="Flower Bouquet Keychains" loading="lazy" onclick="openProduct('flower-bouquet-keychains')" src="images/flower bouquet keychains.jpg.jpeg"/>
+<h3>Flower Bouquet Keychains</h3>
+<p class="price">₹249</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Flower Bouquet Keychains', 249, 'images/flower bouquet keychains.jpg.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Flower Bouquet Keychains', 249, 'images/flower bouquet keychains.jpg.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="bouquets" data-name="Flower Bouquet" data-product-id="flower-bouquet">
+<img alt="Flower Bouquet" loading="lazy" onclick="openProduct('flower-bouquet')" src="images/flower bouquet.jpeg"/>
+<h3>Flower Bouquet</h3>
+<p class="price">₹249</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Flower Bouquet', 249, 'images/flower bouquet.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Flower Bouquet', 249, 'images/flower bouquet.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="hairaccessories" data-name="Flower Hair Band" data-product-id="flower-hair-band">
+<img alt="Flower Hair Band" loading="lazy" onclick="openProduct('flower-hair-band')" src="images/flower hair band.jpg"/>
+<h3>Flower Hair Band</h3>
+<p class="price">₹79</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Flower Hair Band', 79, 'images/flower hair band.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Flower Hair Band', 79, 'images/flower hair band.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Flower Keychain" data-product-id="flower-keychain">
+<img alt="Flower Keychain" loading="lazy" onclick="openProduct('flower-keychain')" src="images/flower keychain.jpeg"/>
+<h3>Flower Keychain</h3>
+<p class="price">₹249</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Flower Keychain', 249, 'images/flower keychain.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Flower Keychain', 249, 'images/flower keychain.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="phonecases" data-name="Flower Phone Case" data-product-id="flower-phone-case">
+<img alt="Flower Phone Case" loading="lazy" onclick="openProduct('flower-phone-case')" src="images/flower phone case.jpeg"/>
+<h3>Flower Phone Case</h3>
+<p class="price">₹399</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Flower Phone Case', 399, 'images/flower phone case.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Flower Phone Case', 399, 'images/flower phone case.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Footwall Keychain" data-product-id="footwall-keychain">
+<img alt="Footwall Keychain" loading="lazy" onclick="openProduct('footwall-keychain')" src="images/footwall keychain.jpg"/>
+<h3>Footwall Keychain</h3>
+<p class="price">₹399</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Footwall Keychain', 399, 'images/footwall keychain.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Footwall Keychain', 399, 'images/footwall keychain.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="bagcharms" data-name="Heart Bag Charm" data-product-id="heart-bag-charm">
+<img alt="Heart Bag Charm" loading="lazy" onclick="openProduct('heart-bag-charm')" src="images/heart bag charm.jpeg"/>
+<h3>Heart Bag Charm</h3>
+<p class="price">₹189</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Heart Bag Charm', 189, 'images/heart bag charm.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Heart Bag Charm', 189, 'images/heart bag charm.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Heart Keychain" data-product-id="heart-keychain">
+<img alt="Heart Keychain" loading="lazy" onclick="openProduct('heart-keychain')" src="images/heart keychain.jpg"/>
+<h3>Heart Keychain</h3>
+<p class="price">₹129</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Heart Keychain', 129, 'images/heart keychain.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Heart Keychain', 129, 'images/heart keychain.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="phonecharms" data-name="Heart Phone Charm" data-product-id="heart-phone-charm-2">
+<img alt="Heart Phone Charm" loading="lazy" onclick="openProduct('heart-phone-charm-2')" src="images/heart phone charm.jpg"/>
+<h3>Heart Phone Charm</h3>
+<p class="price">₹129</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Heart Phone Charm', 129, 'images/heart phone charm.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Heart Phone Charm', 129, 'images/heart phone charm.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="homedecor" data-name="Heart Shape Flower Light Pot" data-product-id="heart-shape-flower-light-pot">
+<img alt="Heart Shape Flower Light Pot" loading="lazy" onclick="openProduct('heart-shape-flower-light-pot')" src="images/heart shape flower light pot.jpeg"/>
+<h3>Heart Shape Flower Light Pot</h3>
+<p class="price">₹599</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Heart Shape Flower Light Pot', 599, 'images/heart shape flower light pot.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Heart Shape Flower Light Pot', 599, 'images/heart shape flower light pot.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="bouquets" data-name="I Love You Bouquet" data-product-id="i-love-you-bouquet">
+<img alt="I Love You Bouquet" loading="lazy" onclick="openProduct('i-love-you-bouquet')" src="images/iou bouquet.jpg"/>
+<h3>I Love You Bouquet</h3>
+<p class="price">₹299</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('I Love You Bouquet', 299, 'images/iou bouquet.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('I Love You Bouquet', 299, 'images/iou bouquet.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Lavender 3 Heart Keychain" data-product-id="lavender-3-heart-keychain">
+<img alt="Lavender 3 Heart Keychain" loading="lazy" onclick="openProduct('lavender-3-heart-keychain')" src="images/lavender 3 heart keychain.jpg"/>
+<h3>Lavender 3 Heart Keychain</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Lavender 3 Heart Keychain', 149, 'images/lavender 3 heart keychain.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Lavender 3 Heart Keychain', 149, 'images/lavender 3 heart keychain.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="hairaccessories" data-name="Lavender Hair Clip" data-product-id="lavender-hair-clip">
+<img alt="Lavender Hair Clip" loading="lazy" onclick="openProduct('lavender-hair-clip')" src="images/lavender hair clip.jpeg"/>
+<h3>Lavender Hair Clip</h3>
+<p class="price">₹99</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Lavender Hair Clip', 99, 'images/lavender hair clip.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Lavender Hair Clip', 99, 'images/lavender hair clip.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="bagcharms" data-name="Light Pink Lilly Bag Charm" data-product-id="light-pink-lilly-bag-charm">
+<img alt="Light Pink Lilly Bag Charm" loading="lazy" onclick="openProduct('light-pink-lilly-bag-charm')" src="images/light pink lilly bag charm.jpg.jpeg"/>
+<h3>Light Pink Lilly Bag Charm</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Light Pink Lilly Bag Charm', 149, 'images/light pink lilly bag charm.jpg.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Light Pink Lilly Bag Charm', 149, 'images/light pink lilly bag charm.jpg.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="bagcharms" data-name="Lily Bag Charm" data-product-id="lily-bag-charm">
+<img alt="Lily Bag Charm" loading="lazy" onclick="openProduct('lily-bag-charm')" src="images/lilly bag charm.jpg"/>
+<h3>Lily Bag Charm</h3>
+<p class="price">₹219</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Lily Bag Charm', 219, 'images/lilly bag charm.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Lily Bag Charm', 219, 'images/lilly bag charm.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Love Heart Keychain" data-product-id="love-heart-keychain">
+<img alt="Love Heart Keychain" loading="lazy" onclick="openProduct('love-heart-keychain')" src="images/love heart keychain.jpg"/>
+<h3>Love Heart Keychain</h3>
+<p class="price">₹129</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Love Heart Keychain', 129, 'images/love heart keychain.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Love Heart Keychain', 129, 'images/love heart keychain.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Matching Teddy Keychain" data-product-id="matching-teddy-keychain">
+<img alt="Matching Teddy Keychain" loading="lazy" onclick="openProduct('matching-teddy-keychain')" src="images/matching teddy keychain.jpeg"/>
+<h3>Matching Teddy Keychain</h3>
+<p class="price">₹399</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Matching Teddy Keychain', 399, 'images/matching teddy keychain.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Matching Teddy Keychain', 399, 'images/matching teddy keychain.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="bouquets" data-name="Mini Bouquet Keychain" data-product-id="mini-bouquet-keychain">
+<img alt="Mini Bouquet Keychain" loading="lazy" onclick="openProduct('mini-bouquet-keychain')" src="images/mini bouquet keychain.jpg"/>
+<h3>Mini Bouquet Keychain</h3>
+<p class="price">₹249</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Mini Bouquet Keychain', 249, 'images/mini bouquet keychain.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Mini Bouquet Keychain', 249, 'images/mini bouquet keychain.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="bouquets" data-name="Mini Flower Bouquet Keychain" data-product-id="mini-flower-bouquet-keychain">
+<img alt="Mini Flower Bouquet Keychain" loading="lazy" onclick="openProduct('mini-flower-bouquet-keychain')" src="images/mini flower bouquet keychain.jpeg"/>
+<h3>Mini Flower Bouquet Keychain</h3>
+<p class="price">₹269</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Mini Flower Bouquet Keychain', 269, 'images/mini flower bouquet keychain.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Mini Flower Bouquet Keychain', 269, 'images/mini flower bouquet keychain.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="bouquets" data-name="Mini Flower Bouquet Keychain 2" data-product-id="mini-flower-bouquet-keychain-2">
+<img alt="Mini Flower Bouquet Keychain 2" loading="lazy" onclick="openProduct('mini-flower-bouquet-keychain-2')" src="images/mini flower bouquet keychain2.jpeg"/>
+<h3>Mini Flower Bouquet Keychain 2</h3>
+<p class="price">₹269</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Mini Flower Bouquet Keychain 2', 269, 'images/mini flower bouquet keychain2.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Mini Flower Bouquet Keychain 2', 269, 'images/mini flower bouquet keychain2.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="phonecharms" data-name="Mini Heart Phone Charm" data-product-id="mini-heart-phone-charm">
+<img alt="Mini Heart Phone Charm" loading="lazy" onclick="openProduct('mini-heart-phone-charm')" src="images/mini heart phone charm.jpeg"/>
+<h3>Mini Heart Phone Charm</h3>
+<p class="price">₹99</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Mini Heart Phone Charm', 99, 'images/mini heart phone charm.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Mini Heart Phone Charm', 99, 'images/mini heart phone charm.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Morpankh (2)" data-product-id="morpankh-2">
+<img alt="Morpankh (2)" loading="lazy" onclick="openProduct('morpankh-2')" src="images/morpankh (2).jpg"/>
+<h3>Morpankh (2)</h3>
+<p class="price">₹129</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Morpankh (2)', 129, 'images/morpankh (2).jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Morpankh (2)', 129, 'images/morpankh (2).jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Morpankh" data-product-id="morpankh">
+<img alt="Morpankh" loading="lazy" onclick="openProduct('morpankh')" src="images/morpankh.jpg"/>
+<h3>Morpankh</h3>
+<p class="price">₹129</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Morpankh', 129, 'images/morpankh.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Morpankh', 129, 'images/morpankh.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="New Heart Keychain" data-product-id="new-heart-keychain">
+<img alt="New Heart Keychain" loading="lazy" onclick="openProduct('new-heart-keychain')" src="images/new heart keychain.jpeg"/>
+<h3>New Heart Keychain</h3>
+<p class="price">₹129</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('New Heart Keychain', 129, 'images/new heart keychain.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('New Heart Keychain', 129, 'images/new heart keychain.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Octopus Keychain" data-product-id="octopus-keychain">
+<img alt="Octopus Keychain" loading="lazy" onclick="openProduct('octopus-keychain')" src="images/octopus keychain.jpeg"/>
+<h3>Octopus Keychain</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Octopus Keychain', 149, 'images/octopus keychain.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Octopus Keychain', 149, 'images/octopus keychain.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Octopus Keychain2" data-product-id="octopus-keychain2">
+<img alt="Octopus Keychain2" loading="lazy" onclick="openProduct('octopus-keychain2')" src="images/octopus keychain2.jpeg"/>
+<h3>Octopus Keychain2</h3>
+<p class="price">₹199</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Octopus Keychain2', 199, 'images/octopus keychain2.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Octopus Keychain2', 199, 'images/octopus keychain2.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="phonecharms" data-name="One Heart Phone Charm" data-product-id="one-heart-phone-charm">
+<img alt="One Heart Phone Charm" loading="lazy" onclick="openProduct('one-heart-phone-charm')" src="images/one heart phone charm.jpg.jpeg"/>
+<h3>One Heart Phone Charm</h3>
+<p class="price">₹49</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('One Heart Phone Charm', 49, 'images/one heart phone charm.jpg.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('One Heart Phone Charm', 49, 'images/one heart phone charm.jpg.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="flowers" data-name="Sunflower Charm" data-product-id="sunflower-charm">
+<img alt="Sunflower Charm" loading="lazy" onclick="openProduct('sunflower-charm')" src="images/orange sunflower charm.jpg"/>
+<h3>Sunflower Charm</h3>
+<p class="price">₹119</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Sunflower Charm', 119, 'images/orange sunflower charm.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Sunflower Charm', 119, 'images/orange sunflower charm.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Penguin Keychain" data-product-id="penguin-keychain">
+<img alt="Penguin Keychain" loading="lazy" onclick="openProduct('penguin-keychain')" src="images/penguin keychain.jpeg"/>
+<h3>Penguin Keychain</h3>
+<p class="price">₹399</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Penguin Keychain', 399, 'images/penguin keychain.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Penguin Keychain', 399, 'images/penguin keychain.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="hairaccessories" data-name="Pink Hair Clip" data-product-id="pink-hair-clip">
+<img alt="Pink Hair Clip" loading="lazy" onclick="openProduct('pink-hair-clip')" src="images/pink hair clip.jpg"/>
+<h3>Pink Hair Clip</h3>
+<p class="price">₹119</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Pink Hair Clip', 119, 'images/pink hair clip.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Pink Hair Clip', 119, 'images/pink hair clip.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="phonecases" data-name="Pink Heart Phone Case" data-product-id="pink-heart-phone-case">
+<img alt="Pink Heart Phone Case" loading="lazy" onclick="openProduct('pink-heart-phone-case')" src="images/pink heart phone case.jpg"/>
+<h3>Pink Heart Phone Case</h3>
+<p class="price">₹399</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Pink Heart Phone Case', 399, 'images/pink heart phone case.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Pink Heart Phone Case', 399, 'images/pink heart phone case.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="flowers" data-name="Pink Lilly Charm" data-product-id="pink-lilly-charm">
+<img alt="Pink Lilly Charm" loading="lazy" onclick="openProduct('pink-lilly-charm')" src="images/pink lilly charm.jpg"/>
+<h3>Pink Lilly Charm</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Pink Lilly Charm', 149, 'images/pink lilly charm.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Pink Lilly Charm', 149, 'images/pink lilly charm.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="flowers" data-name="Purple Lilly Charm" data-product-id="purple-lilly-charm">
+<img alt="Purple Lilly Charm" loading="lazy" onclick="openProduct('purple-lilly-charm')" src="images/purple lilly charm.jpg"/>
+<h3>Purple Lilly Charm</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Purple Lilly Charm', 149, 'images/purple lilly charm.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Purple Lilly Charm', 149, 'images/purple lilly charm.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="hairaccessories" data-name="Purple Scrunchies" data-product-id="purple-scrunchies">
+<img alt="Purple Scrunchies" loading="lazy" onclick="openProduct('purple-scrunchies')" src="images/purple scrunchies.jpeg"/>
+<h3>Purple Scrunchies</h3>
+<p class="price">₹199</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Purple Scrunchies', 199, 'images/purple scrunchies.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Purple Scrunchies', 199, 'images/purple scrunchies.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="hairaccessories" data-name="Red Hair Clip" data-product-id="red-hair-clip">
+<img alt="Red Hair Clip" loading="lazy" onclick="openProduct('red-hair-clip')" src="images/red hair clip.jpg"/>
+<h3>Red Hair Clip</h3>
+<p class="price">₹99</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Red Hair Clip', 99, 'images/red hair clip.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Red Hair Clip', 99, 'images/red hair clip.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="flowers" data-name="Rose" data-product-id="rose">
+<img alt="Rose" loading="lazy" onclick="openProduct('rose')" src="images/rose .jpeg"/>
+<h3>Rose</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Rose', 149, 'images/rose .jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Rose', 149, 'images/rose .jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="bouquets" data-name="Rose Bouquet With Keychain" data-product-id="rose-bouquet-with-keychain">
+<img alt="Rose Bouquet With Keychain" loading="lazy" onclick="openProduct('rose-bouquet-with-keychain')" src="images/rose bouquet with keychain.jpeg"/>
+<h3>Rose Bouquet With Keychain</h3>
+<p class="price">₹249</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Rose Bouquet With Keychain', 249, 'images/rose bouquet with keychain.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Rose Bouquet With Keychain', 249, 'images/rose bouquet with keychain.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="bouquets" data-name="Rose Bouquet" data-product-id="rose-bouquet">
+<img alt="Rose Bouquet" loading="lazy" onclick="openProduct('rose-bouquet')" src="images/rose bouquet.jpg"/>
+<h3>Rose Bouquet</h3>
+<p class="price">₹249</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Rose Bouquet', 249, 'images/rose bouquet.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Rose Bouquet', 249, 'images/rose bouquet.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="hairaccessories" data-name="Rose Clip With Mogra" data-product-id="rose-clip-with-mogra">
+<img alt="Rose Clip With Mogra" loading="lazy" onclick="openProduct('rose-clip-with-mogra')" src="images/rose clip with mogra.jpeg"/>
+<h3>Rose Clip With Mogra</h3>
+<p class="price">₹219</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Rose Clip With Mogra', 219, 'images/rose clip with mogra.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Rose Clip With Mogra', 219, 'images/rose clip with mogra.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="hairaccessories" data-name="Rose Clutchers" data-product-id="rose-clutchers">
+<img alt="Rose Clutchers" loading="lazy" onclick="openProduct('rose-clutchers')" src="images/rose clutchers.jpeg"/>
+<h3>Rose Clutchers</h3>
+<p class="price">₹129</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Rose Clutchers', 129, 'images/rose clutchers.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Rose Clutchers', 129, 'images/rose clutchers.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="hairaccessories" data-name="Rose Hair Clip" data-product-id="rose-hair-clip">
+<img alt="Rose Hair Clip" loading="lazy" onclick="openProduct('rose-hair-clip')" src="images/rose hair clip.jpeg"/>
+<h3>Rose Hair Clip</h3>
+<p class="price">₹99</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Rose Hair Clip', 99, 'images/rose hair clip.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Rose Hair Clip', 99, 'images/rose hair clip.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Rose Keychain" data-product-id="rose-keychain">
+<img alt="Rose Keychain" loading="lazy" onclick="openProduct('rose-keychain')" src="images/rose keychain.jpeg"/>
+<h3>Rose Keychain</h3>
+<p class="price">₹129</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Rose Keychain', 129, 'images/rose keychain.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Rose Keychain', 129, 'images/rose keychain.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="flowers" data-name="Rose" data-product-id="rose-2">
+<img alt="Rose" loading="lazy" onclick="openProduct('rose-2')" src="images/rose.jpg"/>
+<h3>Rose</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Rose', 149, 'images/rose.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Rose', 149, 'images/rose.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="hairaccessories" data-name="Scrunchies Purple" data-product-id="scrunchies-purple">
+<img alt="Scrunchies Purple" loading="lazy" onclick="openProduct('scrunchies-purple')" src="images/scrunchies purple.jpg"/>
+<h3>Scrunchies Purple</h3>
+<p class="price">₹199</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Scrunchies Purple', 199, 'images/scrunchies purple.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Scrunchies Purple', 199, 'images/scrunchies purple.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="hairaccessories" data-name="Scrunchies" data-product-id="scrunchies">
+<img alt="Scrunchies" loading="lazy" onclick="openProduct('scrunchies')" src="images/scrunchies.jpeg"/>
+<h3>Scrunchies</h3>
+<p class="price">₹199</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Scrunchies', 199, 'images/scrunchies.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Scrunchies', 199, 'images/scrunchies.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="hairaccessories" data-name="Small Sunflower Rubber Band" data-product-id="small-sunflower-rubber-band">
+<img alt="Small Sunflower Rubber Band" loading="lazy" onclick="openProduct('small-sunflower-rubber-band')" src="images/small sunflower rubber band.jpeg"/>
+<h3>Small Sunflower Rubber Band</h3>
+<p class="price">₹99</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Small Sunflower Rubber Band', 99, 'images/small sunflower rubber band.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Small Sunflower Rubber Band', 99, 'images/small sunflower rubber band.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Spiderman" data-product-id="spiderman">
+<img alt="Spiderman" loading="lazy" onclick="openProduct('spiderman')" src="images/spiderman.jpeg"/>
+<h3>Spiderman</h3>
+<p class="price">₹399</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Spiderman', 399, 'images/spiderman.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Spiderman', 399, 'images/spiderman.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Strawberry Keychain" data-product-id="strawberry-keychain">
+<img alt="Strawberry Keychain" loading="lazy" onclick="openProduct('strawberry-keychain')" src="images/strawberry keychain.jpeg"/>
+<h3>Strawberry Keychain</h3>
+<p class="price">₹199</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Strawberry Keychain', 199, 'images/strawberry keychain.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Strawberry Keychain', 199, 'images/strawberry keychain.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="flowers" data-name="Sunflower Charm" data-product-id="sunflower-charm-2">
+<img alt="Sunflower Charm" loading="lazy" onclick="openProduct('sunflower-charm-2')" src="images/sunflower charm.jpg"/>
+<h3>Sunflower Charm</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Sunflower Charm', 149, 'images/sunflower charm.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Sunflower Charm', 149, 'images/sunflower charm.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="hairaccessories" data-name="Sunflower Clutcher" data-product-id="sunflower-clutcher">
+<img alt="Sunflower Clutcher" loading="lazy" onclick="openProduct('sunflower-clutcher')" src="images/sunflower clutcher.jpeg"/>
+<h3>Sunflower Clutcher</h3>
+<p class="price">₹99</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Sunflower Clutcher', 99, 'images/sunflower clutcher.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Sunflower Clutcher', 99, 'images/sunflower clutcher.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="hairaccessories" data-name="Sunflower Hairband" data-product-id="sunflower-hairband">
+<img alt="Sunflower Hairband" loading="lazy" onclick="openProduct('sunflower-hairband')" src="images/sunflower hairband.jpeg"/>
+<h3>Sunflower Hairband</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Sunflower Hairband', 149, 'images/sunflower hairband.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Sunflower Hairband', 149, 'images/sunflower hairband.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Sunflower Keychain" data-product-id="sunflower-keychain">
+<img alt="Sunflower Keychain" loading="lazy" onclick="openProduct('sunflower-keychain')" src="images/sunflower keychain.jpg"/>
+<h3>Sunflower Keychain</h3>
+<p class="price">₹79</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Sunflower Keychain', 79, 'images/sunflower keychain.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Sunflower Keychain', 79, 'images/sunflower keychain.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Teddy Bear Keychain" data-product-id="teddy-bear-keychain">
+<img alt="Teddy Bear Keychain" loading="lazy" onclick="openProduct('teddy-bear-keychain')" src="images/teddy bear keychain.jpeg"/>
+<h3>Teddy Bear Keychain</h3>
+<p class="price">₹199</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Teddy Bear Keychain', 199, 'images/teddy bear keychain.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Teddy Bear Keychain', 199, 'images/teddy bear keychain.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="hairaccessories" data-name="Tulip Headbands" data-product-id="tulip-headbands">
+<img alt="Tulip Headbands" loading="lazy" onclick="openProduct('tulip-headbands')" src="images/tuilp headbands.jpg"/>
+<h3>Tulip Headbands</h3>
+<p class="price">₹219</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Tulip Headbands', 219, 'images/tuilp headbands.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Tulip Headbands', 219, 'images/tuilp headbands.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="hairaccessories" data-name="Tulip Hair Bands" data-product-id="tulip-hair-bands">
+<img alt="Tulip Hair Bands" loading="lazy" onclick="openProduct('tulip-hair-bands')" src="images/tulip hair bands.jpg.jpeg"/>
+<h3>Tulip Hair Bands</h3>
+<p class="price">₹99</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Tulip Hair Bands', 99, 'images/tulip hair bands.jpg.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Tulip Hair Bands', 99, 'images/tulip hair bands.jpg.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="flowers" data-name="Tulip Pot" data-product-id="tulip-pot">
+<img alt="Tulip Pot" loading="lazy" onclick="openProduct('tulip-pot')" src="images/tulip port.jpeg"/>
+<h3>Tulip Pot</h3>
+<p class="price">₹419</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Tulip Pot', 419, 'images/tulip port.jpeg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Tulip Pot', 419, 'images/tulip port.jpeg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="keychains" data-name="Volleyball Keychain" data-product-id="volleyball-keychain">
+<img alt="Volleyball Keychain" loading="lazy" onclick="openProduct('volleyball-keychain')" src="images/volleyball keychain.jpg"/>
+<h3>Volleyball Keychain</h3>
+<p class="price">₹199</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Volleyball Keychain', 199, 'images/volleyball keychain.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Volleyball Keychain', 199, 'images/volleyball keychain.jpg')">Add to Cart</button>
+</div>
+</div>
+<div class="product-card" data-category="flowers" data-name="Yellow Sunflower Charm" data-product-id="yellow-sunflower-charm">
+<img alt="Yellow Sunflower Charm" loading="lazy" onclick="openProduct('yellow-sunflower-charm')" src="images/yellow sunflower charm.jpg"/>
+<h3>Yellow Sunflower Charm</h3>
+<p class="price">₹149</p>
+<div class="rating">★★★★★</div>
+<div class="buttons">
+<button class="wish-btn" onclick="toggleWishlist('Yellow Sunflower Charm', 149, 'images/yellow sunflower charm.jpg', this)">♡ Wishlist</button>
+<button class="cart-btn" onclick="addToCart('Yellow Sunflower Charm', 149, 'images/yellow sunflower charm.jpg')">Add to Cart</button>
+</div>
+</div>
+</div>
+</section>
+<!-- ==================================================
+     CONTACT
+================================================== -->
+<section class="contact-section" id="contact">
+<h2>
+        Get in Touch ♡
+    </h2>
+<form class="contact-form" onsubmit="sendMessage(event)">
+<input id="contactName" placeholder="Your Name" required="" type="text"/>
+<input id="contactEmail" placeholder="Your Email" required="" type="email"/>
+<input id="contactPhone" placeholder="Phone Number" type="tel"/>
+<select id="contactType">
+<option>
+                General Enquiry
+            </option>
+<option>
+                Custom Order
+            </option>
+<option>
+                Bulk Order
+            </option>
+<option>
+                Order Support
+            </option>
+</select>
+<textarea id="contactMessage" placeholder="Write your message..." required=""></textarea>
+<button class="shop-btn" type="submit">
+            Send Message
+        </button>
+</form>
+<div class="support-buttons social-support">
+<a aria-label="Visit KASHORIA on Instagram" class="social-btn instagram-btn" href="https://www.instagram.com/kashoria_/" rel="noopener noreferrer" target="_blank" title="Follow KASHORIA on Instagram">
+<svg aria-hidden="true" viewbox="0 0 24 24">
+<rect height="18" rx="5" ry="5" width="18" x="3" y="3"></rect>
+<circle cx="12" cy="12" r="4.2"></circle>
+<circle cx="17.4" cy="6.6" r="1"></circle>
+</svg>
+<span>Instagram</span>
+</a>
+<!-- IMPORTANT: Replace 917778975203 with your real WhatsApp number.
+         Use country code, without +, spaces or dashes. Example: 919876543210 -->
+<a aria-label="Chat with KASHORIA on WhatsApp" class="social-btn whatsapp-btn" href="https://wa.me/917778975203?text=Hi%20KASHORIA!%20I%20would%20like%20to%20place%20an%20order." rel="noopener noreferrer" target="_blank" title="Chat with KASHORIA on WhatsApp">
+<svg aria-hidden="true" viewbox="0 0 24 24">
+<path d="M20.5 11.2a8.5 8.5 0 0 1-12.8 7.4L3.5 20l1.5-4a8.5 8.5 0 1 1 15.5-4.8Z"></path>
+<path d="M9 8.2c.2-.4.4-.4.7-.4h.5c.2 0 .4.1.5.4l.7 1.7c.1.2 0 .4-.1.6l-.6.7c.7 1.3 1.7 2.3 3 3l.7-.6c.2-.2.4-.2.6-.1l1.7.7c.3.1.4.3.4.5v.5c0 .3-.1.5-.4.7-.4.3-.9.5-1.5.4-2.2-.3-4.3-1.5-5.8-3-1.6-1.6-2.7-3.6-3-5.8-.1-.6.1-1.1.4-1.5Z"></path>
+</svg>
+<span>WhatsApp</span>
+</a>
+</div>
+<!-- Floating social buttons: visible while scrolling
+<div class="floating-social" aria-label="Social media links">
+
+    <a
+        href="https://www.instagram.com/kashoria_/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="floating-social-btn floating-instagram"
+        aria-label="Open KASHORIA Instagram"
+        title="Instagram"
+    >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="5" ry="5"></rect>
+            <circle cx="12" cy="12" r="4.2"></circle>
+            <circle cx="17.4" cy="6.6" r="1"></circle>
+        </svg>
+    </a>
+
+    <a
+        href="https://wa.me/917778975203?text=Hi%20KASHORIA!%20I%20would%20like%20to%20place%20an%20order."
+        target="_blank"
+        rel="noopener noreferrer"
+        class="floating-social-btn floating-whatsapp"
+        aria-label="Open KASHORIA WhatsApp"
+        title="WhatsApp"
+    >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.5 11.2a8.5 8.5 0 0 1-12.8 7.4L3.5 20l1.5-4a8.5 8.5 0 1 1 15.5-4.8Z"></path>
+            <path d="M9 8.2c.2-.4.4-.4.7-.4h.5c.2 0 .4.1.5.4l.7 1.7c.1.2 0 .4-.1.6l-.6.7c.7 1.3 1.7 2.3 3 3l.7-.6c.2-.2.4-.2.6-.1l1.7.7c.3.1.4.3.4.5v.5c0 .3-.1.5-.4.7-.4.3-.9.5-1.5.4-2.2-.3-4.3-1.5-5.8-3-3-1.6-2.7-3.6-3-5.8-.1-.6.1-1.1.4-1.5Z"></path>
+        </svg>
+    </a>
+
+</div> -->
+</section>
+<!-- ==================================================
+     FOOTER
+================================================== -->
+<footer>
+<h2>
+        KASHORIA
+    </h2>
+<p>
+        Handmade with Love ♡
+    </p>
+<p>
+        © 2026 KASHORIA. All Rights Reserved.
+    </p>
+</footer>
+<!-- ==================================================
+     EXISTING JAVASCRIPT
+================================================== -->
+<script src="js/store.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/wishlist.js"></script>
+<script src="js/script.js"></script>
+<script src="js/kashoria-enhancements.js"></script>
+<!-- ==================================================
+     HOMEPAGE JAVASCRIPT
+================================================== -->
+<script>
+(function () {
+  "use strict";
+
+  window.openProduct = function (productId) {
+    if (!productId) return;
+    location.href = "product.html?product=" + encodeURIComponent(productId);
+  };
+
+  function normalize(value) {
+    return String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  }
+
+  window.filterCategory = function (category, button) {
+    const target = normalize(category);
+    let shown = 0;
+
+    document.querySelectorAll(".categories button").forEach(b => b.classList.remove("active"));
+    if (button) button.classList.add("active");
+
+    document.querySelectorAll("#productGrid .product-card").forEach(card => {
+      const match = target === "all" || normalize(card.dataset.category) === target;
+      card.style.display = match ? "" : "none";
+      if (match) shown++;
+    });
+
+    const status = document.getElementById("categoryStatus");
+    if (status) status.textContent = target === "all"
+      ? "Showing all products"
+      : `Showing ${shown} product${shown === 1 ? "" : "s"}`;
+  };
+
+  window.searchProducts = function () {
+    const q = normalize(document.getElementById("search")?.value);
+    let shown = 0;
+
+    document.querySelectorAll("#productGrid .product-card").forEach(card => {
+      const match = !q ||
+        normalize(card.dataset.name).includes(q) ||
+        normalize(card.dataset.category).includes(q);
+      card.style.display = match ? "" : "none";
+      if (match) shown++;
+    });
+
+    const status = document.getElementById("categoryStatus");
+    if (status) status.textContent = q
+      ? `${shown} matching product${shown === 1 ? "" : "s"}`
+      : "Showing all products";
+  };
+
+  window.sendMessage = function (event) {
+    event.preventDefault();
+    const enquiry = {
+      name: document.getElementById("contactName")?.value.trim() || "",
+      email: document.getElementById("contactEmail")?.value.trim() || "",
+      phone: document.getElementById("contactPhone")?.value.trim() || "",
+      type: document.getElementById("contactType")?.value || "General Enquiry",
+      message: document.getElementById("contactMessage")?.value.trim() || "",
+      date: new Date().toISOString()
+    };
+
+    const enquiries = JSON.parse(localStorage.getItem("kashoria_enquiries") || "[]");
+    enquiries.push(enquiry);
+    localStorage.setItem("kashoria_enquiries", JSON.stringify(enquiries));
+    alert("Thank you! Your message has been received ♡");
+    event.target.reset();
+  };
+
+  document.addEventListener("DOMContentLoaded", function () {
+    filterCategory("all", document.querySelector(".categories button.active"));
+  });
+})();
+</script>
+<script src="js/kashoria-all-features.js"></script><script src="js/fix-storefront.js"></script>
+
+<script src="js/config.js"></script><script src="js/kashoria-master-v3.js"></script></body>
+</html>

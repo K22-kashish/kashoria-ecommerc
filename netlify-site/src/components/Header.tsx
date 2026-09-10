@@ -1,0 +1,3 @@
+'use client';
+import Link from 'next/link';import {useEffect,useState} from 'react';
+export default function Header(){const [count,setCount]=useState(0);useEffect(()=>{const f=()=>{try{setCount(JSON.parse(localStorage.getItem('kashoria-cart')||'[]').reduce((n:any,x:any)=>n+x.qty,0))}catch{}};f();addEventListener('cart-updated',f);return()=>removeEventListener('cart-updated',f)},[]);return <header className="header"><div className="container nav"><Link href="/" className="brand"><img src="/images/logo.png"/>KASHORIA</Link><nav className="links"><Link href="/">Home</Link><Link href="/shop">Shop</Link><Link href="/track">Track Order</Link><Link href="/cart" className="pill">Cart 🛒 {count}</Link><Link href="/admin" className="pill">Admin</Link></nav></div></header>}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Product | KASHORIA</title><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/kashoria-upgrade.css"><link rel="stylesheet" href="css/kashoria-features.css">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"></head><body>
+<header class="k-site-header">
+  <a class="k-site-brand" href="index.html" aria-label="KASHORIA Home"><img src="images/logo.png" class="k-site-logo" alt="KASHORIA"></a>
+  <nav class="k-site-nav" aria-label="Main navigation">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="contact.html">Contact</a><a href="custom-order.html">Custom</a>
+    <a href="wishlist.html">Wishlist ♡ <span data-wishlist-count>0</span></a>
+    <a href="cart.html">Cart 🛒 <span data-cart-count>0</span></a>
+    <a href="login.html">Login</a>
+  </nav>
+</header>
+<main class="k-product-detail"><div class="k-gallery"><img id="product-image" src="images/placeholder.jpg.png" alt="Product"><p class="k-image-hint">Click image to zoom · Tap thumbnails for more views</p></div>
+<div class="k-detail-info"><span id="product-badge" class="k-badge" hidden></span><div class="eyebrow">Handmade crochet</div><h1 id="product-name">Product</h1><div class="k-detail-rating">★★★★★ <span>5.0 handmade love</span></div><div id="product-price" class="k-detail-price">₹0</div><p id="product-description" class="k-detail-copy"></p>
+<div class="k-option k-colour-option">
+  <label for="product-color">Colour</label>
+  <div id="color-swatches" class="k-color-swatches" aria-label="Colour options"></div>
+  <select id="product-color" aria-label="Choose a colour"></select>
+  <div id="custom-color-box" class="k-custom-color-box" hidden>
+    <label for="custom-color-input">Enter your custom colour</label>
+    <input id="custom-color-input" type="text" maxlength="40" placeholder="e.g. Dusty pink, sage green, lavender blue">
+    <p id="custom-color-preview" class="k-custom-color-preview" aria-live="polite"></p>
+  </div>
+</div>
+<div class="k-option"><label for="custom-note">Customisation note</label><textarea id="custom-note" rows="3" placeholder="Tell us any name or small customization request..."></textarea></div>
+<div class="k-qty-large"><button id="decrease">−</button><span id="quantity">1</span><button id="increase">+</button></div>
+<div class="k-detail-buttons"><button id="cart-button" class="k-buy">Add to Cart</button><button id="buy-button" class="k-primary-btn">Buy Now</button></div>
+<button id="whatsapp-order" class="k-order-btn k-whatsapp" style="width:100%;border:0;padding:14px;border-radius:999px;margin-top:10px">Order / Ask on WhatsApp</button>
+<button id="wishlist-button" class="k-secondary-btn" style="width:100%;margin-top:10px">♡ Add to Wishlist</button>
+<div class="k-info-boxes"><div class="k-info-box">🧶 Handmade</div><div class="k-info-box">🎁 Gift-ready</div><div class="k-info-box">💌 Custom orders</div></div></div></main>
+<section class="k-review-section"><div class="eyebrow">Customer love</div><h2>Reviews & ratings</h2><div id="review-list"></div><form id="review-form" class="k-review-form"><h3>Leave a review</h3><input id="review-name" required placeholder="Your name"><select id="review-rating"><option value="5">★★★★★ 5</option><option value="4">★★★★☆ 4</option><option value="3">★★★☆☆ 3</option></select><textarea id="review-text" required rows="3" placeholder="How did you like it?"></textarea><label class="k-review-photo">Customer photo (optional)<input id="review-photo" type="file" accept="image/jpeg,image/png,image/webp"></label><button>Post Review</button></form></section>
+<script src="js/store.js"></script><script src="js/cart.js"></script><script src="js/wishlist.js"></script><script src="js/kashoria-enhancements.js"></script><script src="js/config.js"></script><script src="js/api.js"></script>
+<script src="js/kashoria-all-features.js"></script><script src="js/fix-storefront.js"></script>
+
+<script src="js/kashoria-master-v3.js"></script></body></html>

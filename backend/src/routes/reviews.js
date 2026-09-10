@@ -1,0 +1,14 @@
+import { Router } from "express";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { pool } from "../db.js";
+import { requireAuth, requireAdmin } from "../middleware/auth.js";
+const router=Router();
+const dir=path.join(path.dirname(fileURLToPath(import.meta.url)),"../../uploads"); fs.mkdirSync(dir,{recursive:true});
+const upload=multer({storage:multer.diskStorage({destination:dir,filename:(_r,f,cb)=>cb(null,`${Date.now()}-${Math.random().toString(36).slice(2,8)}${path.extname(f.originalname).toLowerCase()}`)}),limits:{fileSize:2*1024*1024},fileFilter:(_r,f,cb)=>cb(null,/image\/(jpeg|png|webp)/i.test(f.mimetype))});
+router.get("/:productId",async(req,res,next)=>{try{const [rows]=await pool.query("SELECT id,product_id,reviewer_name,rating,review_text,photo_url,created_at FROM reviews WHERE product_id=? AND approved=1 ORDER BY created_at DESC",[req.params.productId]);res.json({reviews:rows});}catch(e){next(e)}});
+router.post("/:productId",upload.single("photo"),async(req,res,next)=>{try{const {name,rating,text}=req.body,r=Number(rating);if(!name?.trim()||!text?.trim()||r<1||r>5)return res.status(400).json({message:"Name, review and rating 1-5 are required"});const [p]=await pool.query("SELECT id FROM products WHERE id=? AND active=1",[req.params.productId]);if(!p.length)return res.status(404).json({message:"Product not found"});const photo=req.file?`/uploads/${req.file.filename}`:null;await pool.query("INSERT INTO reviews(product_id,user_id,reviewer_name,rating,review_text,photo_url) VALUES(?,?,?,?,?,?)",[req.params.productId,req.user?.id||null,name.trim(),r,text.trim(),photo]);res.status(201).json({message:"Review submitted",photoUrl:photo});}catch(e){next(e)}});
+router.patch("/:id/approval",requireAuth,requireAdmin,async(req,res,next)=>{try{await pool.query("UPDATE reviews SET approved=? WHERE id=?",[!!req.body.approved,req.params.id]);res.json({message:"Review updated"});}catch(e){next(e)}});
+export default router;

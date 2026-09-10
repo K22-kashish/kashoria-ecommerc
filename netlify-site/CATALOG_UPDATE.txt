@@ -1,0 +1,13 @@
+{
+  "total_product_images": 88,
+  "categories": {
+    "bagcharms": 7,
+    "bouquets": 9,
+    "flowers": 9,
+    "hairaccessories": 15,
+    "homedecor": 1,
+    "keychains": 32,
+    "phonecases": 3,
+    "phonecharms": 12
+  }
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact & Enquiry | KASHORIA</title>
+<link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/kashoria-upgrade.css"><link rel="stylesheet" href="css/kashoria-features.css">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="k-site-header">
+  <a class="k-site-brand" href="index.html" aria-label="KASHORIA Home"><img src="images/logo.png" class="k-site-logo" alt="KASHORIA"></a>
+  <nav class="k-site-nav" aria-label="Main navigation">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="contact.html">Contact</a><a href="custom-order.html">Custom</a>
+    <a href="wishlist.html">Wishlist ♡ <span data-wishlist-count>0</span></a>
+    <a href="cart.html">Cart 🛒 <span data-cart-count>0</span></a>
+    <a href="login.html">Login</a>
+  </nav>
+</header>
+<section class="k-page-hero">
+  <div class="eyebrow">We're here to help</div>
+  <h1>Contact KASHORIA</h1>
+  <p>Send your product enquiry, custom-order request, bulk-order request or existing-order question.</p>
+</section>
+<main class="k-contact-grid k-enquiry-layout">
+  <div class="k-story-card">
+    <div class="eyebrow">Quick help</div>
+    <h2>Tell us what you need ♡</h2>
+    <p>For custom crochet products, please mention the product, colour, quantity and required date.</p>
+    <div class="k-help-list">
+      <div><strong>Product enquiry</strong><span>Ask about price, colours, sizes or availability.</span></div>
+      <div><strong>Custom order</strong><span>Tell us your design idea, quantity and deadline.</span></div>
+      <div><strong>Existing order</strong><span>Include your order number so we can help faster.</span></div>
+      <div><strong>Bulk order</strong><span>Share quantity and event/occasion details for a quote.</span></div>
+    </div>
+    <a class="k-primary-btn" href="https://wa.me/917778975203?text=Hi%20KASHORIA!%20I%20have%20an%20enquiry." target="_blank" rel="noopener">Chat on WhatsApp</a>
+  </div>
+  <div class="k-story-card k-contact-form">
+    <div class="eyebrow">Enquiry form</div>
+    <h2>Send your requirement</h2>
+    <form id="contact-form">
+      <div class="k-form-grid">
+        <div class="k-form-group"><label for="cf-name">Full Name *</label><input id="cf-name" type="text" placeholder="Your name" required></div>
+        <div class="k-form-group"><label for="cf-mobile">Mobile Number *</label><input id="cf-mobile" type="tel" inputmode="numeric" pattern="[0-9 +()-]{10,15}" placeholder="Your mobile number" required></div>
+        <div class="k-form-group"><label for="cf-email">Email</label><input id="cf-email" type="email" placeholder="Your email"></div>
+        <div class="k-form-group"><label for="cf-order">Order Number</label><input id="cf-order" type="text" placeholder="If you already placed an order"></div>
+        <div class="k-form-group full"><label for="cf-type">What do you need? *</label><select id="cf-type" required><option value="">Select enquiry type</option><option>Product enquiry</option><option>Custom order</option><option>Existing order</option><option>Bulk order</option><option>Other</option></select></div>
+        <div class="k-form-group full"><label for="cf-product">Product / Item Name</label><input id="cf-product" type="text" placeholder="e.g. Heart Phone Charm"></div>
+        <div class="k-form-group"><label for="cf-qty">Quantity</label><input id="cf-qty" type="number" min="1" placeholder="e.g. 5"></div>
+        <div class="k-form-group"><label for="cf-date">Required Date</label><input id="cf-date" type="date"></div>
+        <div class="k-form-group full"><label for="cf-message">Your Requirement *</label><textarea id="cf-message" rows="6" required placeholder="Write your colour preference, customization, delivery requirement, issue or any other details..."></textarea></div>
+      </div>
+      <button type="submit" class="k-order-btn">Send Enquiry on WhatsApp →</button>
+      <p class="k-form-note">Your form will open WhatsApp with all the details filled in for you.</p>
+    </form>
+  </div>
+</main>
+<script src="js/store.js"></script><script src="js/kashoria-enhancements.js"></script>
+<script>
+(function(){
+  const form=document.getElementById('contact-form');
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    const val=id=>document.getElementById(id).value.trim();
+    const lines=[
+      'Hi KASHORIA! I want to make an enquiry.',
+      '',
+      'Name: '+val('cf-name'),
+      'Mobile: '+val('cf-mobile'),
+      'Email: '+(val('cf-email')||'Not provided'),
+      'Order Number: '+(val('cf-order')||'Not provided'),
+      'Enquiry Type: '+val('cf-type'),
+      'Product / Item: '+(val('cf-product')||'Not specified'),
+      'Quantity: '+(val('cf-qty')||'Not specified'),
+      'Required Date: '+(val('cf-date')||'Not specified'),
+      '',
+      'Requirement: '+val('cf-message')
+    ];
+    const number=(window.KASHORIA_CONFIG&&window.KASHORIA_CONFIG.whatsapp)||'917778975203';
+    window.open('https://wa.me/'+number+'?text='+encodeURIComponent(lines.join('\n')),'_blank','noopener');
+    if(window.kashoriaToast) window.kashoriaToast('Your enquiry is ready in WhatsApp ♡');
+  });
+})();
+</script>
+<script src="js/kashoria-all-features.js"></script>
+<script src="js/config.js"></script><script src="js/kashoria-master-v3.js"></script></body></html>
