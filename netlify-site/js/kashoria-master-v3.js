@@ -4,7 +4,7 @@
 (() => {
   'use strict';
 
-  const API_BASE = String(window.KASHORIA_API || '').replace(/\/+$/, '');
+  const API_BASE = String(window.KASHORIA_API || 'https://kashoria-ecommerce.onrender.com').replace(/\/+$/, '');
 
   const CFG = Object.assign({
     freeShippingAt: 1299,
