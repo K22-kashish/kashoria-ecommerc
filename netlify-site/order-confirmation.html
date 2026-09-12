@@ -1,2 +1,654 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Order Confirmed | KASHORIA</title><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/kashoria-upgrade.css"><link rel="stylesheet" href="css/kashoria-features.css"><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"></head><body><header class="k-site-header"><a class="k-site-brand" href="index.html"><img src="images/logo.png" class="k-site-logo" alt="KASHORIA"></a><nav class="k-site-nav"><a href="index.html">Home</a><a href="shop.html">Shop</a><a href="contact.html">Contact</a><a href="custom-order.html">Custom</a><a href="wishlist.html">Wishlist ♡ <span data-wishlist-count>0</span></a><a href="cart.html">Cart 🛒 <span data-cart-count>0</span></a><a href="login.html">Login</a></nav></header><main class="k-account"><div class="k-account-card" id="confirmation"></div></main><script src="js/store.js"></script><script src="js/config.js"></script><script src="js/api.js"></script><script src="js/kashoria-enhancements.js"></script><script src="js/kashoria-all-features.js"></script><script>const q=new URLSearchParams(location.search).get('order'),box=document.getElementById('confirmation');async function show(){if(!q){box.innerHTML='<h1>No recent order</h1><p>Start shopping to create an order.</p><a class="k-primary-btn" href="shop.html">Shop</a>';return;}try{const d=await KASHORIA_API_CLIENT.request('/api/orders/'+encodeURIComponent(q)),o=d.order;localStorage.setItem('kashoria_last_order',JSON.stringify(o));const items=(o.items||[]).map(x=>'<div class="k-summary-line"><span>'+KASHORIA_FEATURES.esc(x.product_name)+' × '+x.quantity+(x.color?' · '+KASHORIA_FEATURES.esc(x.color):'')+'</span><strong>'+KASHORIA_FEATURES.money(Number(x.unit_price)*Number(x.quantity))+'</strong></div>').join('');const wa='Hi KASHORIA! I placed order '+o.order_number+' for '+KASHORIA_FEATURES.money(o.total)+'. Please confirm my order.';box.innerHTML='<div class="eyebrow">Thank you ♡</div><h1>Order received</h1><p>Your order number is <b>'+KASHORIA_FEATURES.esc(o.order_number)+'</b>.</p><div class="k-order-details"><h3>Delivery</h3><p><b>'+KASHORIA_FEATURES.esc(o.customer_name)+'</b><br>'+KASHORIA_FEATURES.esc(o.address)+', '+KASHORIA_FEATURES.esc(o.city)+' - '+KASHORIA_FEATURES.esc(o.pincode)+'<br>☎ '+KASHORIA_FEATURES.esc(o.phone)+'</p><h3>Items</h3>'+items+'<div class="k-summary-line"><span>Discount</span><strong>'+KASHORIA_FEATURES.money(o.discount||0)+'</strong></div><div class="k-summary-line"><span>Gift wrapping</span><strong>'+KASHORIA_FEATURES.money(o.gift_wrap_fee||0)+'</strong></div><div class="k-summary-line"><span>Delivery</span><strong>'+KASHORIA_FEATURES.money(o.shipping_fee||0)+'</strong></div><div class="k-summary-total"><span>Total</span><strong>'+KASHORIA_FEATURES.money(o.total)+'</strong></div></div><div class="k-confirm-actions"><a class="k-primary-btn" href="https://wa.me/'+KASHORIA_CONFIG.whatsapp+'?text='+encodeURIComponent(wa)+'" target="_blank">Confirm on WhatsApp</a><a class="k-secondary-btn" href="track-order.html?order='+encodeURIComponent(o.order_number)+'">Track Order</a><a class="k-secondary-btn" href="shop.html">Continue Shopping</a></div>';}catch(e){box.innerHTML='<h1>Order placed</h1><p>'+KASHORIA_FEATURES.esc(e.message||'Your order was created. Please check your order number.')+'</p><a class="k-primary-btn" href="shop.html">Continue Shopping</a>';}}show();</script>
-<script src="js/kashoria-master-v3.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Order Confirmed | KASHORIA</title>
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/kashoria-upgrade.css">
+<link rel="stylesheet" href="css/kashoria-features.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+.k-confirm-wrap{
+  max-width:850px;
+  margin:45px auto;
+  padding:0 18px;
+}
+
+.k-success-icon{
+  width:72px;
+  height:72px;
+  margin:0 auto 15px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+  background:#f8e9ef;
+}
+
+.k-confirm-card{
+  background:#fff;
+  border-radius:24px;
+  padding:30px;
+  box-shadow:0 12px 40px rgba(80,50,60,.10);
+}
+
+.k-confirm-head{
+  text-align:center;
+  margin-bottom:28px;
+}
+
+.k-confirm-head h1{
+  margin:5px 0 8px;
+}
+
+.k-confirm-head p{
+  margin:5px 0;
+}
+
+.k-order-number{
+  display:inline-block;
+  margin-top:12px;
+  padding:9px 16px;
+  border-radius:999px;
+  background:#faf3f5;
+  font-weight:600;
+}
+
+.k-order-section{
+  margin-top:25px;
+  padding-top:22px;
+  border-top:1px solid #eee;
+}
+
+.k-order-section h3{
+  margin-bottom:14px;
+}
+
+.k-customer-box{
+  line-height:1.8;
+}
+
+.k-summary-line{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  padding:8px 0;
+}
+
+.k-item-extra{
+  font-size:13px;
+  opacity:.72;
+  margin-top:3px;
+}
+
+.k-summary-total{
+  display:flex;
+  justify-content:space-between;
+  padding-top:15px;
+  margin-top:10px;
+  border-top:1px solid #ddd;
+  font-size:20px;
+  font-weight:700;
+}
+
+.k-payment-status{
+  display:inline-block;
+  padding:6px 12px;
+  border-radius:999px;
+  background:#f7f1e8;
+  font-size:13px;
+  font-weight:600;
+}
+
+.k-confirm-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:28px;
+}
+
+.k-confirm-actions a,
+.k-confirm-actions button{
+  flex:1;
+  min-width:180px;
+  text-align:center;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.k-whatsapp-btn{
+  background:#25D366 !important;
+  color:#fff !important;
+  border:0;
+}
+
+.k-print-btn{
+  background:#fff;
+  border:1px solid #ddd;
+}
+
+.k-note{
+  margin-top:22px;
+  text-align:center;
+  font-size:13px;
+  opacity:.7;
+}
+
+@media(max-width:600px){
+  .k-confirm-card{
+    padding:20px;
+  }
+
+  .k-summary-line{
+    font-size:14px;
+  }
+
+  .k-confirm-actions{
+    flex-direction:column;
+  }
+
+  .k-confirm-actions a,
+  .k-confirm-actions button{
+    width:100%;
+  }
+}
+
+@media print{
+  .k-site-header,
+  .k-confirm-actions,
+  .k-note{
+    display:none !important;
+  }
+
+  body{
+    background:#fff !important;
+  }
+
+  .k-confirm-wrap{
+    margin:0 auto;
+  }
+
+  .k-confirm-card{
+    box-shadow:none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="k-site-header">
+
+<a class="k-site-brand" href="index.html">
+<img src="images/logo.png" class="k-site-logo" alt="KASHORIA">
+</a>
+
+<nav class="k-site-nav">
+<a href="index.html">Home</a>
+<a href="shop.html">Shop</a>
+<a href="contact.html">Contact</a>
+<a href="custom-order.html">Custom</a>
+<a href="wishlist.html">Wishlist ♡ <span data-wishlist-count>0</span></a>
+<a href="cart.html">Cart 🛒 <span data-cart-count>0</span></a>
+<a href="login.html">Login</a>
+</nav>
+
+</header>
+
+
+<main class="k-confirm-wrap">
+
+<div class="k-confirm-card" id="confirmation">
+
+<p style="text-align:center;">Loading your order...</p>
+
+</div>
+
+</main>
+
+
+<script src="js/store.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/kashoria-enhancements.js"></script>
+<script src="js/kashoria-all-features.js"></script>
+
+
+<script>
+
+const q = new URLSearchParams(location.search).get('order');
+
+const box = document.getElementById('confirmation');
+
+
+function esc(value){
+
+  return KASHORIA_FEATURES.esc(
+    value == null ? '' : String(value)
+  );
+
+}
+
+
+function money(value){
+
+  return KASHORIA_FEATURES.money(
+    Number(value || 0)
+  );
+
+}
+
+
+async function show(){
+
+  if(!q){
+
+    box.innerHTML = `
+      <div class="k-confirm-head">
+        <div class="k-success-icon">♡</div>
+        <h1>No recent order</h1>
+        <p>Start shopping to create an order.</p>
+      </div>
+
+      <div class="k-confirm-actions">
+        <a class="k-primary-btn" href="shop.html">
+          Shop Now
+        </a>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  try{
+
+    const d = await KASHORIA_API_CLIENT.request(
+      '/api/orders/' + encodeURIComponent(q)
+    );
+
+
+    const o = d.order;
+
+
+    localStorage.setItem(
+      'kashoria_last_order',
+      JSON.stringify(o)
+    );
+
+
+    /*
+      PRODUCTS
+    */
+
+    const items = (o.items || []).map(function(x){
+
+      const lineTotal =
+        Number(x.unit_price || 0) *
+        Number(x.quantity || 0);
+
+
+      return `
+        <div class="k-summary-line">
+
+          <div>
+
+            <strong>
+              ${esc(x.product_name)}
+            </strong>
+
+            × ${Number(x.quantity || 0)}
+
+            ${x.color ? `
+              <div class="k-item-extra">
+                🎨 Colour: ${esc(x.color)}
+              </div>
+            ` : ''}
+
+            ${x.customization_note ? `
+              <div class="k-item-extra">
+                ✨ Customisation: ${esc(x.customization_note)}
+              </div>
+            ` : ''}
+
+            ${x.gift_wrap ? `
+              <div class="k-item-extra">
+                🎁 Gift wrapping
+              </div>
+            ` : ''}
+
+          </div>
+
+
+          <strong>
+            ${money(lineTotal)}
+          </strong>
+
+        </div>
+      `;
+
+    }).join('');
+
+
+    /*
+      WHATSAPP MESSAGE
+    */
+
+    let waMessage =
+`✨ KASHORIA ORDER ACKNOWLEDGEMENT ✨
+
+Order Number: ${o.order_number}
+
+Customer: ${o.customer_name}
+Phone: ${o.phone}
+Email: ${o.email || '-'}
+
+ORDER DETAILS
+-------------------------`;
+
+    (o.items || []).forEach(function(x){
+
+      waMessage +=
+`\n• ${x.product_name} × ${x.quantity}`;
+
+      if(x.color){
+        waMessage += ` | Colour: ${x.color}`;
+      }
+
+      if(x.customization_note){
+        waMessage += ` | Customisation: ${x.customization_note}`;
+      }
+
+      waMessage +=
+` | ${money(Number(x.unit_price || 0) * Number(x.quantity || 0))}`;
+
+    });
+
+
+    waMessage +=
+`
+
+Subtotal: ${money(o.subtotal)}
+Discount: -${money(o.discount || 0)}
+Gift Wrapping: ${money(o.gift_wrap_fee || 0)}
+Delivery: ${money(o.shipping_fee || 0)}
+
+TOTAL: ${money(o.total)}
+
+Payment Method: ${o.payment_method || '-'}
+Order Status: ${o.order_status || 'NEW'}
+
+DELIVERY ADDRESS
+-------------------------
+${o.address}
+${o.city} - ${o.pincode}
+
+Thank you for shopping with KASHORIA! ♡`;
+
+
+    const whatsappUrl =
+      'https://wa.me/' +
+      KASHORIA_CONFIG.whatsapp +
+      '?text=' +
+      encodeURIComponent(waMessage);
+
+
+    /*
+      PAGE
+    */
+
+    box.innerHTML = `
+
+      <div class="k-confirm-head">
+
+        <div class="k-success-icon">
+          ✓
+        </div>
+
+        <div class="eyebrow">
+          Thank you ♡
+        </div>
+
+        <h1>
+          Order Received!
+        </h1>
+
+        <p>
+          Your KASHORIA order has been successfully placed.
+        </p>
+
+        <div class="k-order-number">
+          Order No: ${esc(o.order_number)}
+        </div>
+
+      </div>
+
+
+      <!-- CUSTOMER DETAILS -->
+
+      <div class="k-order-section">
+
+        <h3>👤 Customer Details</h3>
+
+        <div class="k-customer-box">
+
+          <strong>
+            ${esc(o.customer_name)}
+          </strong>
+
+          <br>
+
+          📞 ${esc(o.phone)}
+
+          <br>
+
+          ✉️ ${esc(o.email || '-')}
+
+        </div>
+
+      </div>
+
+
+      <!-- DELIVERY -->
+
+      <div class="k-order-section">
+
+        <h3>📦 Delivery Details</h3>
+
+        <div class="k-customer-box">
+
+          ${esc(o.address)}
+
+          <br>
+
+          ${esc(o.city)} - ${esc(o.pincode)}
+
+        </div>
+
+      </div>
+
+
+      <!-- ITEMS -->
+
+      <div class="k-order-section">
+
+        <h3>🧶 Your Items</h3>
+
+        ${items || '<p>No items found.</p>'}
+
+      </div>
+
+
+      <!-- PAYMENT -->
+
+      <div class="k-order-section">
+
+        <h3>💳 Payment & Order Status</h3>
+
+        <p>
+          <strong>Payment:</strong>
+          ${esc(o.payment_method || '-')}
+        </p>
+
+        <p>
+          <strong>Payment Status:</strong>
+          <span class="k-payment-status">
+            ${esc(o.payment_status || 'PENDING')}
+          </span>
+        </p>
+
+        <p>
+          <strong>Order Status:</strong>
+          <span class="k-payment-status">
+            ${esc(o.order_status || 'NEW')}
+          </span>
+        </p>
+
+      </div>
+
+
+      <!-- BILL -->
+
+      <div class="k-order-section">
+
+        <h3>🧾 Order Summary</h3>
+
+        <div class="k-summary-line">
+          <span>Subtotal</span>
+          <strong>${money(o.subtotal)}</strong>
+        </div>
+
+        <div class="k-summary-line">
+          <span>Discount</span>
+          <strong>-${money(o.discount || 0)}</strong>
+        </div>
+
+        <div class="k-summary-line">
+          <span>Gift Wrapping</span>
+          <strong>${money(o.gift_wrap_fee || 0)}</strong>
+        </div>
+
+        <div class="k-summary-line">
+          <span>Delivery</span>
+          <strong>${money(o.shipping_fee || 0)}</strong>
+        </div>
+
+        <div class="k-summary-total">
+          <span>Total</span>
+          <strong>${money(o.total)}</strong>
+        </div>
+
+      </div>
+
+
+      <!-- ACTIONS -->
+
+      <div class="k-confirm-actions">
+
+        <a
+          class="k-primary-btn k-whatsapp-btn"
+          href="${whatsappUrl}"
+          target="_blank"
+          rel="noopener"
+        >
+          💬 Send Order Details on WhatsApp
+        </a>
+
+
+        <button
+          class="k-secondary-btn k-print-btn"
+          onclick="window.print()"
+        >
+          🧾 Print / Save Receipt
+        </button>
+
+
+        <a
+          class="k-secondary-btn"
+          href="track-order.html?order=${encodeURIComponent(o.order_number)}"
+        >
+          📦 Track Order
+        </a>
+
+
+        <a
+          class="k-secondary-btn"
+          href="shop.html"
+        >
+          🛍 Continue Shopping
+        </a>
+
+      </div>
+
+
+      <p class="k-note">
+        💌 Please keep your order number
+        <strong>${esc(o.order_number)}</strong>
+        for future reference.
+      </p>
+
+    `;
+
+  }
+
+
+  catch(e){
+
+    box.innerHTML = `
+
+      <div class="k-confirm-head">
+
+        <div class="k-success-icon">
+          ✓
+        </div>
+
+        <h1>
+          Order Placed
+        </h1>
+
+        <p>
+          Your order was created successfully.
+        </p>
+
+        <p>
+          ${esc(
+            e.message ||
+            'Please check your order number.'
+          )}
+        </p>
+
+      </div>
+
+      <div class="k-confirm-actions">
+
+        <a
+          class="k-primary-btn"
+          href="shop.html"
+        >
+          Continue Shopping
+        </a>
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+show();
+
+</script>
+
+
+<script src="js/kashoria-master-v3.js"></script>
+
+</body>
+</html>
