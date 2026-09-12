@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  const API = String(window.KASHORIA_API || '').replace(/\/+$/, '');
+  const API = String(window.KASHORIA_API || 'https://kashoria-ecommerce.onrender.com').replace(/\/+$/, '');
   function token(){ return localStorage.getItem('kashoria_token') || ''; }
   async function request(path, options={}){
     const headers = new Headers(options.headers||{});
