@@ -83,11 +83,11 @@ const normalized = input.map(x => {
  const coupon=await couponInfo(conn,body.couponCode,subtotal);
  const giftWrap=normalized.reduce((s,{x,q})=>s+(x.giftWrap?giftWrapFee*q:0),0);
 const shipping = getDeliveryCharge(city, cleanPincode, subtotal);const total=Math.max(0,subtotal-coupon.discount)+shipping+giftWrap;const orderNo=makeOrderNumber();
- const [r]=await conn.query(`INSERT INTO orders(order_number,user_id,customer_name,phone,email,address,city,cleanPincode,payment_method,payment_status,order_status,subtotal,shipping_fee,total,coupon_code,discount,gift_wrap_fee,gift_message,notes) VALUES(?,?,?,?,?,?,?,?,?,'PENDING','NEW',?,?,?,?,?,?,?,?)`,[orderNo,userId||null,name.trim(),phone,email.trim().toLowerCase(),address,city,pincode,paymentMethod,subtotal,shipping,total,coupon.code,coupon.discount,giftWrap,String(body.giftMessage||""),String(body.orderNote||"")]);
+ const [r]=await conn.query(`INSERT INTO orders(order_number,user_id,customer_name,phone,email,address,city,cleanPincode,payment_method,payment_status,order_status,subtotal,shipping_fee,total,coupon_code,discount,gift_wrap_fee,gift_message,notes) VALUES(?,?,?,?,?,?,?,?,?,'PENDING','NEW',?,?,?,?,?,?,?,?)`,[orderNo,userId||null,name.trim(),phone,email.trim().toLowerCase(),address,city,cleanPincode,paymentMethod,subtotal,shipping,total,coupon.code,coupon.discount,giftWrap,String(body.giftMessage||""),String(body.orderNote||"")]);
  for(const {p,q,x} of normalized){const line=Number(p.price)*q;await conn.query(`INSERT INTO order_items(order_id,product_id,product_name,product_image,unit_price,quantity,line_total,color,customization_note,reference_image,gift_wrap,gift_message) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`,[r.insertId,p.id,p.name,p.image,p.price,q,line,String(x.color||"As shown in product image"),String(x.note||""),String(x.referenceImage||""),!!x.giftWrap,String(x.giftMessage||"")]);}
  if(coupon.code)await conn.query("UPDATE coupons SET used_count=used_count+1 WHERE code=?",[coupon.code]);
  return {id:r.insertId,orderNumber:orderNo,subtotal,discount:coupon.discount,giftWrapFee:giftWrap,shippingFee:shipping,total};
- };
+ }  ;
 router.post("/", async (req, res, next) => {
 
   try {
