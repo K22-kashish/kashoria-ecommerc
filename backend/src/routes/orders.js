@@ -791,58 +791,70 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-/* =========================================================
-   ADMIN - UPDATE ORDER STATUS
-   ========================================================= */
+// =========================================================
+// ADMIN: UPDATE PAYMENT STATUS
+// =========================================================
 
 router.patch(
-  "/:orderNumber/status",
-  requireAuth,
+  "/:orderNumber/payment-status",
   requireAdmin,
-  async (req, res, next) => {
+  async (req, res) => {
     try {
+      const { orderNumber } = req.params;
+      const { paymentStatus } = req.body;
+
+      const status = String(paymentStatus || "")
+        .trim()
+        .toUpperCase();
+
       const allowedStatuses = [
-        "NEW",
-        "CONFIRMED",
-        "PROCESSING",
-        "SHIPPED",
-        "DELIVERED",
-        "CANCELLED",
+        "PENDING",
+        "PAID",
+        "FAILED",
+        "REFUNDED"
       ];
 
-      if (
-        !allowedStatuses.includes(
-          req.body.status
-        )
-      ) {
+      if (!allowedStatuses.includes(status)) {
         return res.status(400).json({
-          message: "Invalid order status",
+          ok: false,
+          message: "Invalid payment status"
         });
       }
 
       const [result] = await pool.query(
         `
-          UPDATE orders
-          SET order_status = ?
-          WHERE order_number = ?
+        UPDATE orders
+        SET
+          payment_status = ?,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE order_number = ?
         `,
-        [
-          req.body.status,
-          req.params.orderNumber,
-        ]
+        [status, orderNumber]
       );
 
       if (!result.affectedRows) {
         return res.status(404).json({
-          message: "Order not found",
+          ok: false,
+          message: "Order not found"
         });
       }
 
       return res.json({
-        message: "Order status updated",
+        ok: true,
+        message: "Payment status updated successfully",
+        paymentStatus: status
       });
-    } catch (e) {
-      next(e);
+
+    } catch (error) {
+      console.error(
+        "PAYMENT STATUS ERROR:",
+        error
+      );
+
+      return res.status(500).json({
+        ok: false,
+        message: "Could not update payment status"
+      });
     }
   }
 );
