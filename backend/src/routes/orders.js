@@ -17,7 +17,10 @@ function getDeliveryCharge(city = "", pincode = "", subtotal = 0) {
   if (subtotal <= 0) return 0;
 
   const cityName = String(city || "").trim().toLowerCase();
-  const pin = String(pincode || "").replace(/\D/g, "");
+
+  const pin = String(pincode || "")
+    .replace(/\D/g, "")
+    .slice(0, 6);
 
   // Ahmedabad
   if (
@@ -92,7 +95,9 @@ async function couponInfo(conn, code, subtotal) {
     };
   }
 
-  const couponCode = String(code).trim().toUpperCase();
+  const couponCode = String(code)
+    .trim()
+    .toUpperCase();
 
   const [rows] = await conn.query(
     `
@@ -115,8 +120,10 @@ async function couponInfo(conn, code, subtotal) {
   const now = new Date();
 
   if (
-    (coupon.starts_at && now < new Date(coupon.starts_at)) ||
-    (coupon.ends_at && now > new Date(coupon.ends_at))
+    (coupon.starts_at &&
+      now < new Date(coupon.starts_at)) ||
+    (coupon.ends_at &&
+      now > new Date(coupon.ends_at))
   ) {
     const e = new Error("Coupon is not active");
     e.status = 400;
@@ -191,25 +198,6 @@ async function createDbOrder({
     } = customer;
 
     /* -----------------------------------------------------
-       PINCODE VALIDATION
-       ----------------------------------------------------- */
-
- const shippingcharge = getDeliveryCharge(
-  city,
-  cleanPincode,
-  subtotal
-);
-
-    if (cleanPincode.length !== 6) {
-      const e = new Error(
-        "Please enter a valid 6-digit pincode."
-      );
-
-      e.status = 400;
-      throw e;
-    }
-
-    /* -----------------------------------------------------
        CUSTOMER VALIDATION
        ----------------------------------------------------- */
 
@@ -223,6 +211,23 @@ async function createDbOrder({
     ) {
       const e = new Error(
         "Complete delivery details are required"
+      );
+
+      e.status = 400;
+      throw e;
+    }
+
+    /* -----------------------------------------------------
+       PINCODE CLEANING + VALIDATION
+       ----------------------------------------------------- */
+
+    const cleanPincode = String(pincode || "")
+      .replace(/\D/g, "")
+      .slice(0, 6);
+
+    if (cleanPincode.length !== 6) {
+      const e = new Error(
+        "Please enter a valid 6-digit pincode."
       );
 
       e.status = 400;
@@ -257,9 +262,7 @@ async function createDbOrder({
     /* -----------------------------------------------------
        NORMALIZE CART
 
-       IMPORTANT:
-       NO STOCK CHECK HERE.
-
+       NO STOCK CHECK.
        All active products are treated as available.
        ----------------------------------------------------- */
 
@@ -329,6 +332,8 @@ async function createDbOrder({
 
     /* -----------------------------------------------------
        DELIVERY
+
+       Uses the customer's cleaned pincode.
        ----------------------------------------------------- */
 
     const shipping = getDeliveryCharge(
@@ -356,7 +361,50 @@ async function createDbOrder({
     const orderNo = makeOrderNumber();
 
     /* -----------------------------------------------------
+       NOTES
+
+       The current database has only one notes column.
+       We store order note, coupon and gift-wrap information
+       inside notes so no missing DB columns are required.
+       ----------------------------------------------------- */
+
+    const noteParts = [];
+
+    if (body.orderNote) {
+      noteParts.push(
+        `Order Note: ${String(body.orderNote).trim()}`
+      );
+    }
+
+    if (coupon.code) {
+      noteParts.push(
+        `Coupon: ${coupon.code} | Discount: ₹${coupon.discount}`
+      );
+    }
+
+    if (giftWrap > 0) {
+      noteParts.push(
+        `Gift Wrap: ₹${giftWrap}`
+      );
+    }
+
+    if (body.giftMessage) {
+      noteParts.push(
+        `Gift Message: ${String(body.giftMessage).trim()}`
+      );
+    }
+
+    const notes = noteParts.join(" | ");
+
+    /* -----------------------------------------------------
        INSERT ORDER
+
+       IMPORTANT:
+       Database column is `pincode`.
+       We save the cleaned pincode into it.
+
+       Only columns that actually exist in the current
+       orders table are used here.
        ----------------------------------------------------- */
 
     const [orderResult] = await conn.query(
@@ -370,17 +418,13 @@ async function createDbOrder({
           email,
           address,
           city,
-          cleanPincode,
+          pincode,
           payment_method,
           payment_status,
           order_status,
           subtotal,
           shipping_fee,
           total,
-          coupon_code,
-          discount,
-          gift_wrap_fee,
-          gift_message,
           notes
         )
         VALUES
@@ -399,10 +443,6 @@ async function createDbOrder({
           ?,
           ?,
           ?,
-          ?,
-          ?,
-          ?,
-          ?,
           ?
         )
       `,
@@ -414,16 +454,17 @@ async function createDbOrder({
         String(email).trim().toLowerCase(),
         String(address).trim(),
         String(city).trim(),
+
+        // Cleaned 6-digit pincode
         cleanPincode,
+
+        // UPI only
         paymentMethod,
+
         subtotal,
         shipping,
         total,
-        coupon.code,
-        coupon.discount,
-        giftWrap,
-        String(body.giftMessage || ""),
-        String(body.orderNote || ""),
+        notes,
       ]
     );
 
@@ -480,14 +521,23 @@ async function createDbOrder({
           product.price,
           quantity,
           lineTotal,
+
           String(
             item.color ||
               "As shown in product image"
           ),
+
           String(item.note || ""),
-          String(item.referenceImage || ""),
+
+          String(
+            item.referenceImage || ""
+          ),
+
           !!item.giftWrap,
-          String(item.giftMessage || ""),
+
+          String(
+            item.giftMessage || ""
+          ),
         ]
       );
     }
@@ -535,7 +585,7 @@ router.post("/", async (req, res, next) => {
       Razorpay has been completely removed.
       COD is not accepted.
 
-      The frontend should send:
+      Frontend must send:
       paymentMethod: "UPI"
     */
 
@@ -585,6 +635,7 @@ router.get(
             SELECT *
             FROM order_items
             WHERE order_id = ?
+            ORDER BY id ASC
           `,
           [order.id]
         );
@@ -719,6 +770,7 @@ router.get("/", async (req, res, next) => {
           SELECT *
           FROM order_items
           WHERE order_id = ?
+          ORDER BY id ASC
         `,
         [orders[0].id]
       );
@@ -732,8 +784,7 @@ router.get("/", async (req, res, next) => {
     }
 
     return res.status(401).json({
-      message:
-        "Authentication required",
+      message: "Authentication required",
     });
   } catch (e) {
     next(e);
