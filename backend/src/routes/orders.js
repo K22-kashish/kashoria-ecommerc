@@ -65,16 +65,20 @@ if (cleanPincode.length !== 6) {
  if(!name||!phone||!email||!address||!city||!pincode){const e=new Error("Complete delivery details are required");e.status=400;throw e;}
  const input=body.items;if(!Array.isArray(input)||!input.length){const e=new Error("Cart is empty");e.status=400;throw e;}
  const products=await loadProducts(conn,input),map=new Map(products.map(p=>[String(p.id),p]));
- const normalized=input.map(x=>{const p=map.get(String(x.productId||x.id||""));if(!p){const e=new Error("One or more products are unavailable");e.status=400;throw e;}const q=Math.max(1,Math.min(100,Number(x.quantity)||1));if (Number(p.stock) < q) {
-  const e = new Error(
-    `${p.name} has insufficient stock`
-  );
+const normalized = input.map(x => {
+  const p = map.get(String(x.productId || x.id || ""));
 
-  e.status = 400;
+  if (!p) {
+    const e = new Error("One or more products are unavailable");
+    e.status = 400;
+    throw e;
+  }
 
-  throw e;
-  return {p,q,x};
-}{const e=new Error(`${p.name} has insufficient stock`);e.status=400;throw e;}return {p,q,x};});
+  const q = Math.max(1, Math.min(1000, Number(x.quantity) || 1));
+
+  return { p, q, x };
+});
+ {const e=new Error(`${p.name} has insufficient stock`);e.status=400;throw e;}return {p,q,x};});
  const subtotal=normalized.reduce((s,{p,q})=>s+Number(p.price)*q,0);
  const coupon=await couponInfo(conn,body.couponCode,subtotal);
  const giftWrap=normalized.reduce((s,{x,q})=>s+(x.giftWrap?giftWrapFee*q:0),0);
@@ -83,7 +87,7 @@ const shipping = getDeliveryCharge(city, cleanPincode, subtotal);const total=Mat
  for(const {p,q,x} of normalized){const line=Number(p.price)*q;await conn.query(`INSERT INTO order_items(order_id,product_id,product_name,product_image,unit_price,quantity,line_total,color,customization_note,reference_image,gift_wrap,gift_message) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`,[r.insertId,p.id,p.name,p.image,p.price,q,line,String(x.color||"As shown in product image"),String(x.note||""),String(x.referenceImage||""),!!x.giftWrap,String(x.giftMessage||"")]);}
  if(coupon.code)await conn.query("UPDATE coupons SET used_count=used_count+1 WHERE code=?",[coupon.code]);
  return {id:r.insertId,orderNumber:orderNo,subtotal,discount:coupon.discount,giftWrapFee:giftWrap,shippingFee:shipping,total};
- });}
+ };
 router.post("/", async (req, res, next) => {
 
   try {
