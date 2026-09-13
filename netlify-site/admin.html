@@ -30,24 +30,1162 @@
 <script>
 (function(){
 'use strict';
-const api=window.KASHORIA_API_CLIENT;const $=id=>document.getElementById(id);const money=n=>'₹'+Math.round(Number(n)||0).toLocaleString('en-IN');
-const esc=x=>String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-let allOrders=[];
-function showLogin(){ $('admin-login').hidden=false;$('admin-dashboard').hidden=true; }
-function showDashboard(){ $('admin-login').hidden=true;$('admin-dashboard').hidden=false;load(); }
-function logout(){localStorage.removeItem('kashoria_token');localStorage.removeItem('kashoria_user');showLogin();$('admin-password').value='';}
-async function login(e){e.preventDefault();const err=$('admin-login-error');err.textContent='';try{const data=await api.request('/api/auth/login',{method:'POST',body:JSON.stringify({email:$('admin-email').value.trim(),password:$('admin-password').value})});if(data.user?.role!=='admin')throw new Error('This account is not an admin account.');localStorage.setItem('kashoria_token',data.token);localStorage.setItem('kashoria_user',JSON.stringify(data.user));showDashboard();}catch(x){err.textContent=x.message||'Login failed';}}
-function orderCard(o){const items=Array.isArray(o.items)?o.items:[];const itemHtml=items.length?items.map(i=>`<div class="k-admin-item-row"><img src="${esc(i.product_image||'images/placeholder.jpg.png')}" onerror="this.src='images/placeholder.jpg.png'"><div><b>${esc(i.product_name||'Product')}</b><div class="k-admin-muted">Colour: ${esc(i.color||'As shown in product image')} · Qty: ${Number(i.quantity)||1}</div><div class="k-admin-muted">Unit: ${money(i.unit_price)} · Line total: ${money(i.line_total)}</div>${i.customization_note?`<div class="k-admin-muted">Note: ${esc(i.customization_note)}</div>`:''}${i.gift_wrap?`<div class="k-admin-muted">🎁 Gift wrap${i.gift_message?' — '+esc(i.gift_message):''}</div>`:''}</div><strong>${money(i.line_total)}</strong></div>`).join(''):'<div class="k-admin-empty">No order items found.</div>';
-const status=o.order_status||'NEW';const date=o.created_at?new Date(o.created_at).toLocaleString('en-IN'):'—';
-return `<article class="k-admin-order-card"><div class="k-admin-order-head"><div><h3>${esc(o.order_number)}</h3><div class="k-admin-muted">${esc(date)}</div></div><span class="k-admin-badge">${esc(status)}</span></div><div class="k-admin-grid"><div class="k-admin-section"><h4>👤 Customer</h4><div class="k-admin-line"><b>Name:</b> ${esc(o.customer_name)}</div><div class="k-admin-line"><b>Phone:</b> ${esc(o.phone)}</div><div class="k-admin-line"><b>Email:</b> ${esc(o.email)}</div><div class="k-admin-line"><b>Address:</b> ${esc(o.address)}, ${esc(o.city)} - ${esc(o.pincode)}</div></div><div class="k-admin-section"><h4>💰 Payment & Total</h4><div class="k-admin-line"><b>Payment:</b> ${esc(o.payment_method)}</div><div class="k-admin-line"><b>Payment status:</b> ${esc(o.payment_status)}</div><div class="k-admin-line"><b>Subtotal:</b> ${money(o.subtotal)}</div><div class="k-admin-line"><b>Discount:</b> -${money(o.discount)}</div><div class="k-admin-line"><b>Gift wrap:</b> ${money(o.gift_wrap_fee)}</div><div class="k-admin-line"><b>Delivery:</b> ${Number(o.shipping_fee)?money(o.shipping_fee):'FREE'}</div><div class="k-admin-line"><b>Grand total:</b> <strong>${money(o.total)}</strong></div>${o.coupon_code?`<div class="k-admin-line"><b>Coupon:</b> ${esc(o.coupon_code)}</div>`:''}</div></div><div class="k-admin-section"><h4>🛍️ Products in this order</h4>${itemHtml}</div>${o.notes?`<div class="k-admin-section"><h4>📝 Order note</h4><div class="k-admin-line">${esc(o.notes)}</div></div>`:''}<div class="k-admin-actions"><label>Status <select onchange="window.updateOrderStatus('${esc(o.order_number)}',this.value)">${['NEW','CONFIRMED','PROCESSING','SHIPPED','DELIVERED','CANCELLED'].map(x=>`<option value="${x}" ${x===status?'selected':''}>${x}</option>`).join('')}</select></label><input id="courier-${esc(o.id)}" placeholder="Courier" value="${esc(o.courier||'')}"><input id="tracking-${esc(o.id)}" placeholder="Tracking ID" value="${esc(o.tracking_id||'')}"><button onclick="window.saveTracking('${esc(o.order_number)}',${Number(o.id)})">Save Tracking</button></div></article>`;}
-function renderOrders(){const q=$('order-search').value.trim().toLowerCase();const filtered=allOrders.filter(o=>[o.order_number,o.customer_name,o.phone,o.city,o.email].some(v=>String(v||'').toLowerCase().includes(q)));$('admin-orders').innerHTML=filtered.length?filtered.map(orderCard).join(''):'<div class="k-admin-empty">No matching orders found.</div>';}
-async function load(){try{$('admin-msg').textContent='Loading products, orders and MySQL data…';const [stats,ps,os,cs,coupons]=await Promise.all([api.request('/api/features/admin/stats'),api.request('/api/products?limit=500'),api.request('/api/orders/admin/all'),api.request('/api/features/custom-orders'),api.request('/api/features/coupons')]);allOrders=os.orders||[];$('stat-products').textContent=stats.products;$('stat-orders').textContent=stats.orders;$('stat-sales').textContent=money(stats.sales);$('stat-pending').textContent=stats.openOrders;$('admin-msg').textContent='✓ Connected. Orders below are loaded directly from MySQL.';renderOrders();$('admin-products').innerHTML=(ps.products||[]).map(p=>`<div class="k-admin-product-row"><div><b>${esc(p.name)}</b><div class="k-admin-muted">₹${Number(p.price)||0} · ${esc(p.category)} · Stock ${Number(p.stock)||0}</div></div><button onclick="window.editPrice('${esc(p.id)}',${Number(p.price)||0})">Edit Price</button></div>`).join('');$('admin-custom').innerHTML=(cs.customOrders||[]).map(o=>`<div class="k-admin-order-card"><b>#${Number(o.id)}</b> · ${esc(o.name)} · ${esc(o.product_idea)} · Qty ${Number(o.quantity)||1}<div class="k-admin-actions"><select onchange="window.customStatus(${Number(o.id)},this.value)">${['NEW','CONTACTED','QUOTED','CONFIRMED','COMPLETED','CANCELLED'].map(x=>`<option ${x===o.status?'selected':''}>${x}</option>`).join('')}</select></div></div>`).join('')||'<div class="k-admin-empty">No custom orders.</div>';$('coupon-list').innerHTML=(coupons.coupons||[]).map(c=>`<div class="k-admin-item"><b>${esc(c.code)}</b><span>${esc(c.label||c.type)} · used ${Number(c.used_count)||0}</span></div>`).join('')||'<div class="k-admin-empty">No coupons.</div>';}catch(e){if(e.status===401||e.status===403){localStorage.removeItem('kashoria_token');showLogin();$('admin-login-error').textContent=e.message||'Admin login required';}else $('admin-msg').textContent=e.message||'Could not load admin data.';}}
-window.updateOrderStatus=async(id,status)=>{try{await api.request('/api/orders/'+encodeURIComponent(id)+'/status',{method:'PATCH',body:JSON.stringify({status})});await load();}catch(e){alert(e.message)}};
-window.saveTracking=async(id,orderId)=>{try{await api.request('/api/features/orders/'+encodeURIComponent(id)+'/tracking',{method:'PATCH',body:JSON.stringify({courier:$('courier-'+orderId)?.value||'',trackingId:$('tracking-'+orderId)?.value||''})});alert('Tracking details saved.');await load();}catch(e){alert(e.message)}};
-window.editPrice=async(id,current)=>{const v=prompt('New price for this product',current);if(v===null||isNaN(Number(v)))return;try{const old=await api.request('/api/products/'+encodeURIComponent(id));const p=old.product;let options=[];try{options=typeof p.options_json==='string'?JSON.parse(p.options_json||'[]'):p.options_json||[];}catch(_){}await api.request('/api/products/'+encodeURIComponent(id),{method:'PUT',body:JSON.stringify({...p,price:Number(v),options})});await load();}catch(e){alert(e.message)}};
-window.customStatus=async(id,status)=>{try{await api.request('/api/features/custom-orders/'+id,{method:'PATCH',body:JSON.stringify({status})});await load();}catch(e){alert(e.message)}};
-$('admin-login-form').addEventListener('submit',login);$('logout-admin').addEventListener('click',logout);$('refresh-admin').addEventListener('click',load);$('order-search').addEventListener('input',renderOrders);$('clear-order-search').addEventListener('click',()=>{$('order-search').value='';renderOrders();});$('coupon-form').addEventListener('submit',async e=>{e.preventDefault();try{await api.request('/api/features/coupons',{method:'POST',body:JSON.stringify({code:$('cp-code').value,type:$('cp-type').value,value:Number($('cp-value').value),minOrder:Number($('cp-min').value)||0,label:$('cp-label').value})});e.target.reset();await load();}catch(err){alert(err.message)}});
-if(api.token())showDashboard();else showLogin();
+
+const api = window.KASHORIA_API_CLIENT;
+
+const $ = id => document.getElementById(id);
+
+const money = n =>
+  '₹' + Math.round(Number(n) || 0).toLocaleString('en-IN');
+
+const esc = x =>
+  String(x ?? '').replace(
+    /[&<>"']/g,
+    m => ({
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+    }[m])
+  );
+
+let allOrders = [];
+
+/* =========================================================
+   LOGIN / LOGOUT
+   ========================================================= */
+
+function showLogin(){
+  $('admin-login').hidden = false;
+  $('admin-dashboard').hidden = true;
+}
+
+function showDashboard(){
+  $('admin-login').hidden = true;
+  $('admin-dashboard').hidden = false;
+  load();
+}
+
+function logout(){
+  localStorage.removeItem('kashoria_token');
+  localStorage.removeItem('kashoria_user');
+
+  showLogin();
+
+  $('admin-password').value = '';
+}
+
+async function login(e){
+  e.preventDefault();
+
+  const err = $('admin-login-error');
+
+  err.textContent = '';
+
+  try{
+    const data = await api.request(
+      '/api/auth/login',
+      {
+        method:'POST',
+        body:JSON.stringify({
+          email:$('admin-email').value.trim(),
+          password:$('admin-password').value
+        })
+      }
+    );
+
+    if(data.user?.role !== 'admin'){
+      throw new Error(
+        'This account is not an admin account.'
+      );
+    }
+
+    localStorage.setItem(
+      'kashoria_token',
+      data.token
+    );
+
+    localStorage.setItem(
+      'kashoria_user',
+      JSON.stringify(data.user)
+    );
+
+    showDashboard();
+
+  }catch(x){
+    err.textContent =
+      x.message || 'Login failed';
+  }
+}
+
+/* =========================================================
+   PAYMENT STATUS
+   ========================================================= */
+
+async function updatePaymentStatus(
+  orderNumber,
+  paymentStatus
+){
+  try{
+
+    await api.request(
+      '/api/orders/' +
+      encodeURIComponent(orderNumber) +
+      '/payment-status',
+      {
+        method:'PATCH',
+        body:JSON.stringify({
+          paymentStatus
+        })
+      }
+    );
+
+    await load();
+
+  }catch(e){
+    alert(
+      e.message ||
+      'Could not update payment status.'
+    );
+  }
+}
+
+window.updatePaymentStatus =
+  updatePaymentStatus;
+
+/* =========================================================
+   ORDER STATUS
+   ========================================================= */
+
+async function updateOrderStatus(
+  orderNumber,
+  status
+){
+  try{
+
+    await api.request(
+      '/api/orders/' +
+      encodeURIComponent(orderNumber) +
+      '/status',
+      {
+        method:'PATCH',
+        body:JSON.stringify({
+          status
+        })
+      }
+    );
+
+    await load();
+
+  }catch(e){
+    alert(
+      e.message ||
+      'Could not update order status.'
+    );
+  }
+}
+
+window.updateOrderStatus =
+  updateOrderStatus;
+
+/* =========================================================
+   ORDER CARD
+   ========================================================= */
+
+function orderCard(o){
+
+  const items =
+    Array.isArray(o.items)
+      ? o.items
+      : [];
+
+  const itemHtml =
+    items.length
+
+      ? items.map(i => `
+
+        <div class="k-admin-item-row">
+
+          <img
+            src="${esc(
+              i.product_image ||
+              'images/placeholder.jpg.png'
+            )}"
+            onerror="
+              this.src='images/placeholder.jpg.png'
+            "
+          >
+
+          <div>
+
+            <b>
+              ${esc(
+                i.product_name ||
+                'Product'
+              )}
+            </b>
+
+            <div class="k-admin-muted">
+              Colour:
+              ${esc(
+                i.color ||
+                'As shown in product image'
+              )}
+            </div>
+
+            <div class="k-admin-muted">
+              Quantity:
+              ${Number(i.quantity) || 1}
+            </div>
+
+            <div class="k-admin-muted">
+              Unit price:
+              ${money(i.unit_price)}
+            </div>
+
+            ${
+              i.customization_note
+                ? `
+                  <div class="k-admin-muted">
+                    Note:
+                    ${esc(
+                      i.customization_note
+                    )}
+                  </div>
+                `
+                : ''
+            }
+
+            ${
+              i.gift_wrap
+                ? `
+                  <div class="k-admin-muted">
+                    🎁 Gift wrap
+                    ${
+                      i.gift_message
+                        ? ' — ' +
+                          esc(
+                            i.gift_message
+                          )
+                        : ''
+                    }
+                  </div>
+                `
+                : ''
+            }
+
+          </div>
+
+          <strong>
+            ${money(i.line_total)}
+          </strong>
+
+        </div>
+
+      `).join('')
+
+      : `
+        <div class="k-admin-empty">
+          No order items found.
+        </div>
+      `;
+
+  const status =
+    o.order_status || 'NEW';
+
+const paymentStatus =
+    String(o.payment_status || 'PENDING').toUpperCase();
+
+  const paymentMethod =
+    o.payment_method || 'UPI';
+
+  const date =
+    o.created_at
+      ? new Date(
+          o.created_at
+        ).toLocaleString('en-IN')
+      : '—';
+
+  return `
+
+  <article
+    class="k-admin-order-card"
+  >
+
+    <!-- ORDER HEADER -->
+
+    <div
+      class="k-admin-order-head"
+    >
+
+      <div>
+
+        <h3>
+          ${esc(o.order_number)}
+        </h3>
+
+        <div class="k-admin-muted">
+          ${esc(date)}
+        </div>
+
+      </div>
+
+      <div>
+
+        <span
+          class="k-admin-badge"
+        >
+          ${esc(status)}
+        </span>
+
+        <span
+          class="k-admin-badge"
+          style="margin-left:5px"
+        >
+          Payment:
+          ${esc(paymentStatus)}
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- CUSTOMER + PAYMENT -->
+
+    <div
+      class="k-admin-grid"
+    >
+
+      <!-- CUSTOMER -->
+
+      <div
+        class="k-admin-section"
+      >
+
+        <h4>
+          👤 Customer
+        </h4>
+
+        <div class="k-admin-line">
+          <b>Name:</b>
+          ${esc(o.customer_name)}
+        </div>
+
+        <div class="k-admin-line">
+          <b>Phone:</b>
+          ${esc(o.phone)}
+        </div>
+
+        <div class="k-admin-line">
+          <b>Email:</b>
+          ${esc(o.email)}
+        </div>
+
+        <div class="k-admin-line">
+          <b>Address:</b>
+          ${esc(o.address)}
+        </div>
+
+        <div class="k-admin-line">
+          <b>City:</b>
+          ${esc(o.city)}
+        </div>
+
+        <div class="k-admin-line">
+          <b>Pincode:</b>
+          ${esc(o.pincode)}
+        </div>
+
+      </div>
+
+
+      <!-- PAYMENT -->
+
+      <div
+        class="k-admin-section"
+      >
+
+        <h4>
+          💰 Payment & Total
+        </h4>
+
+        <div class="k-admin-line">
+          <b>Payment method:</b>
+          ${esc(paymentMethod)}
+        </div>
+
+        <div class="k-admin-line">
+          <b>Payment status:</b>
+          <strong>
+            ${esc(paymentStatus)}
+          </strong>
+        </div>
+
+        <div class="k-admin-line">
+          <b>Subtotal:</b>
+          ${money(o.subtotal)}
+        </div>
+
+        <div class="k-admin-line">
+          <b>Delivery:</b>
+          ${
+            Number(o.shipping_fee)
+              ? money(o.shipping_fee)
+              : 'FREE'
+          }
+        </div>
+
+        <div class="k-admin-line">
+
+          <b>
+            Grand total:
+          </b>
+
+          <strong>
+            ${money(o.total)}
+          </strong>
+
+        </div>
+
+
+        <!-- PAYMENT BUTTON -->
+
+        <div
+          class="k-admin-actions"
+        >
+
+          ${
+            paymentStatus === 'PAID'
+
+              ? `
+                <button
+                  type="button"
+                  disabled
+                  style="
+                    background:#3f7d5a;
+                    cursor:default;
+                  "
+                >
+                  ✓ Payment Received
+                </button>
+              `
+
+              : `
+             <button
+  type="button"
+  onclick="
+    window.updatePaymentStatus(
+      '${esc(o.order_number)}',
+      'PAID'
+    )
+  "
+  style="
+    background:#3f7d5a;
+    color:white;
+    font-weight:700;
+    padding:12px 18px;
+    border:0;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:14px;
+  "
+>
+  ✓ MARK AS PAID
+</button>
+              `
+          }
+
+          ${
+            paymentStatus === 'PENDING'
+
+              ? `
+                <button
+                  type="button"
+                  onclick="
+                    window.updatePaymentStatus(
+                      '${esc(o.order_number)}',
+                      'FAILED'
+                    )
+                  "
+                  style="
+                    background:#9b5360;
+                  "
+                >
+                  Payment Failed
+                </button>
+              `
+
+              : ''
+          }
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- PRODUCTS -->
+
+    <div
+      class="k-admin-section"
+    >
+
+      <h4>
+        🛍️ Products in this order
+      </h4>
+
+      ${itemHtml}
+
+    </div>
+
+
+    <!-- NOTES -->
+
+    ${
+      o.notes
+        ? `
+          <div
+            class="k-admin-section"
+          >
+
+            <h4>
+              📝 Order Notes
+            </h4>
+
+            <div
+              class="k-admin-line"
+            >
+              ${esc(o.notes)}
+            </div>
+
+          </div>
+        `
+        : ''
+    }
+
+
+    <!-- ORDER STATUS -->
+
+    <div
+      class="k-admin-actions"
+    >
+
+      <label>
+
+        <b>
+          Order Status:
+        </b>
+
+        <select
+          onchange="
+            window.updateOrderStatus(
+              '${esc(o.order_number)}',
+              this.value
+            )
+          "
+        >
+
+          ${
+            [
+              'NEW',
+              'CONFIRMED',
+              'PROCESSING',
+              'SHIPPED',
+              'DELIVERED',
+              'CANCELLED'
+            ]
+              .map(
+                x => `
+                  <option
+                    value="${x}"
+                    ${
+                      x === status
+                        ? 'selected'
+                        : ''
+                    }
+                  >
+                    ${x}
+                  </option>
+                `
+              )
+              .join('')
+          }
+
+        </select>
+
+      </label>
+
+    </div>
+
+  </article>
+
+  `;
+}
+
+/* =========================================================
+   SEARCH ORDERS
+   ========================================================= */
+
+function renderOrders(){
+
+  const q =
+    $('order-search')
+      .value
+      .trim()
+      .toLowerCase();
+
+  const filtered =
+    allOrders.filter(o =>
+      [
+        o.order_number,
+        o.customer_name,
+        o.phone,
+        o.city,
+        o.email,
+        o.pincode
+      ].some(
+        v =>
+          String(v || '')
+            .toLowerCase()
+            .includes(q)
+      )
+    );
+
+  $('admin-orders').innerHTML =
+    filtered.length
+
+      ? filtered
+          .map(orderCard)
+          .join('')
+
+      : `
+        <div
+          class="k-admin-empty"
+        >
+          No matching orders found.
+        </div>
+      `;
+}
+
+/* =========================================================
+   LOAD ADMIN DATA
+   ========================================================= */
+
+async function load(){
+
+  try{
+
+    $('admin-msg').textContent =
+      'Loading products, orders and MySQL data…';
+
+    const [
+      stats,
+      ps,
+      os,
+      cs,
+      coupons
+    ] = await Promise.all([
+
+      api.request(
+        '/api/features/admin/stats'
+      ),
+
+      api.request(
+        '/api/products?limit=500'
+      ),
+
+      api.request(
+        '/api/orders/admin/all'
+      ),
+
+      api.request(
+        '/api/features/custom-orders'
+      ),
+
+      api.request(
+        '/api/features/coupons'
+      )
+
+    ]);
+
+    allOrders =
+      os.orders || [];
+
+
+    /* =====================================================
+       DASHBOARD STATISTICS
+       ===================================================== */
+
+    $('stat-products').textContent =
+      stats.products || 0;
+
+    $('stat-orders').textContent =
+      stats.orders || 0;
+
+    $('stat-sales').textContent =
+      money(stats.sales);
+
+    $('stat-pending').textContent =
+      stats.openOrders || 0;
+
+
+    $('admin-msg').textContent =
+      '✓ Connected. Orders loaded from MySQL.';
+
+
+    /* =====================================================
+       ORDERS
+       ===================================================== */
+
+    renderOrders();
+
+
+    /* =====================================================
+       PRODUCTS
+       ===================================================== */
+
+    $('admin-products').innerHTML =
+      (ps.products || [])
+        .map(
+          p => `
+
+          <div
+            class="k-admin-product-row"
+          >
+
+            <div>
+
+              <b>
+                ${esc(p.name)}
+              </b>
+
+              <div
+                class="k-admin-muted"
+              >
+                ₹${Number(p.price) || 0}
+                ·
+                ${esc(p.category)}
+              </div>
+
+            </div>
+
+            <button
+              onclick="
+                window.editPrice(
+                  '${esc(p.id)}',
+                  ${Number(p.price) || 0}
+                )
+              "
+            >
+              Edit Price
+            </button>
+
+          </div>
+
+        `
+        )
+        .join('');
+
+
+    /* =====================================================
+       CUSTOM ORDERS
+       ===================================================== */
+
+    $('admin-custom').innerHTML =
+      (cs.customOrders || [])
+        .map(
+          o => `
+
+          <div
+            class="k-admin-order-card"
+          >
+
+            <b>
+              #${Number(o.id)}
+            </b>
+
+            ·
+
+            ${esc(o.name)}
+
+            ·
+
+            ${esc(o.product_idea)}
+
+            · Qty
+            ${Number(o.quantity) || 1}
+
+            <div
+              class="k-admin-actions"
+            >
+
+              <select
+                onchange="
+                  window.customStatus(
+                    ${Number(o.id)},
+                    this.value
+                  )
+                "
+              >
+
+                ${
+                  [
+                    'NEW',
+                    'CONTACTED',
+                    'QUOTED',
+                    'CONFIRMED',
+                    'COMPLETED',
+                    'CANCELLED'
+                  ]
+                    .map(
+                      x => `
+                        <option
+                          ${
+                            x === o.status
+                              ? 'selected'
+                              : ''
+                          }
+                        >
+                          ${x}
+                        </option>
+                      `
+                    )
+                    .join('')
+                }
+
+              </select>
+
+            </div>
+
+          </div>
+
+        `
+        )
+        .join('')
+
+      ||
+
+      `
+        <div
+          class="k-admin-empty"
+        >
+          No custom orders.
+        </div>
+      `;
+
+
+    /* =====================================================
+       COUPONS
+       ===================================================== */
+
+    $('coupon-list').innerHTML =
+      (coupons.coupons || [])
+        .map(
+          c => `
+
+          <div
+            class="k-admin-item-row"
+          >
+
+            <div>
+
+              <b>
+                ${esc(c.code)}
+              </b>
+
+              <div
+                class="k-admin-muted"
+              >
+                ${
+                  esc(
+                    c.label ||
+                    c.type
+                  )
+                }
+
+                · Used:
+                ${Number(c.used_count) || 0}
+              </div>
+
+            </div>
+
+          </div>
+
+        `
+        )
+        .join('')
+
+      ||
+
+      `
+        <div
+          class="k-admin-empty"
+        >
+          No coupons.
+        </div>
+      `;
+
+  }catch(e){
+
+    console.error(
+      'ADMIN LOAD ERROR:',
+      e
+    );
+
+    if(
+      e.status === 401 ||
+      e.status === 403
+    ){
+
+      localStorage.removeItem(
+        'kashoria_token'
+      );
+
+      showLogin();
+
+      $('admin-login-error').textContent =
+        e.message ||
+        'Admin login required';
+
+    }else{
+
+      $('admin-msg').textContent =
+        e.message ||
+        'Could not load admin data.';
+
+    }
+
+  }
+}
+
+/* =========================================================
+   EDIT PRODUCT PRICE
+   ========================================================= */
+
+window.editPrice =
+async function(id,current){
+
+  const v =
+    prompt(
+      'New price for this product',
+      current
+    );
+
+  if(
+    v === null ||
+    isNaN(Number(v))
+  ){
+    return;
+  }
+
+  try{
+
+    const old =
+      await api.request(
+        '/api/products/' +
+        encodeURIComponent(id)
+      );
+
+    const p =
+      old.product;
+
+    let options = [];
+
+    try{
+
+      options =
+        typeof p.options_json === 'string'
+          ? JSON.parse(
+              p.options_json || '[]'
+            )
+          : (
+              p.options_json || []
+            );
+
+    }catch(_){}
+
+    await api.request(
+      '/api/products/' +
+      encodeURIComponent(id),
+      {
+        method:'PUT',
+
+        body:JSON.stringify({
+          ...p,
+          price:Number(v),
+          options
+        })
+      }
+    );
+
+    await load();
+
+  }catch(e){
+
+    alert(
+      e.message ||
+      'Could not update price.'
+    );
+
+  }
+};
+
+
+/* =========================================================
+   CUSTOM ORDER STATUS
+   ========================================================= */
+
+window.customStatus =
+async function(id,status){
+
+  try{
+
+    await api.request(
+      '/api/features/custom-orders/' +
+      id,
+      {
+        method:'PATCH',
+
+        body:JSON.stringify({
+          status
+        })
+      }
+    );
+
+    await load();
+
+  }catch(e){
+
+    alert(
+      e.message ||
+      'Could not update custom order.'
+    );
+
+  }
+};
+
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+
+$('admin-login-form')
+  .addEventListener(
+    'submit',
+    login
+  );
+
+$('logout-admin')
+  .addEventListener(
+    'click',
+    logout
+  );
+
+$('refresh-admin')
+  .addEventListener(
+    'click',
+    load
+  );
+
+$('order-search')
+  .addEventListener(
+    'input',
+    renderOrders
+  );
+
+$('clear-order-search')
+  .addEventListener(
+    'click',
+    () => {
+
+      $('order-search').value = '';
+
+      renderOrders();
+
+    }
+  );
+
+
+/* =========================================================
+   CREATE COUPON
+   ========================================================= */
+
+$('coupon-form')
+  .addEventListener(
+    'submit',
+    async e => {
+
+      e.preventDefault();
+
+      try{
+
+        await api.request(
+          '/api/features/coupons',
+          {
+            method:'POST',
+
+            body:JSON.stringify({
+
+              code:
+                $('cp-code')
+                  .value
+                  .trim()
+                  .toUpperCase(),
+
+              type:
+                $('cp-type').value,
+
+              value:
+                Number(
+                  $('cp-value').value
+                ),
+
+              minOrder:
+                Number(
+                  $('cp-min').value
+                ) || 0,
+
+              label:
+                $('cp-label').value.trim()
+
+            })
+          }
+        );
+
+        e.target.reset();
+
+        await load();
+
+      }catch(err){
+
+        alert(
+          err.message ||
+          'Could not create coupon.'
+        );
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+if(api.token()){
+
+  showDashboard();
+
+}else{
+
+  showLogin();
+
+}
+
 })();
 </script>
 </body></html>
