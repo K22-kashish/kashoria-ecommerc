@@ -1,7 +1,379 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Checkout | KASHORIA</title><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/kashoria-upgrade.css"><link rel="stylesheet" href="css/kashoria-features.css"><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"></head><body>
-<header class="k-site-header"><a class="k-site-brand" href="index.html"><img src="images/logo.png" class="k-site-logo" alt="KASHORIA"></a><nav class="k-site-nav"><a href="index.html">Home</a><a href="shop.html">Shop</a><a href="contact.html">Contact</a><a href="custom-order.html">Custom</a><a href="wishlist.html">Wishlist ♡ <span data-wishlist-count>0</span></a><a href="cart.html">Cart 🛒 <span data-cart-count>0</span></a><a href="login.html">Login</a></nav></header>
-<section class="k-page-hero"><div class="eyebrow">Almost yours</div><h1>Checkout</h1><p>Confirm your delivery, payment and gift details.</p></section>
-<main class="k-checkout"><form id="checkout-form" class="k-checkout-grid"><section class="k-panel"><h2>Delivery details</h2><div class="k-form-grid"><div class="k-form-group"><label>Full name</label><input id="co-name" required></div><div class="k-form-group"><label>Phone</label><input id="co-phone" type="tel" pattern="[0-9]{10}" required></div><div class="k-form-group full"><label>Email</label><input id="co-email" type="email" required></div><div class="k-form-group full"><label>Address</label><textarea id="co-address" rows="3" required></textarea></div><div class="k-form-group"><label>City</label><input id="co-city" required></div><div class="k-form-group"><label>Pincode</label><input id="co-pincode" inputmode="numeric" pattern="[0-9]{6}" required></div></div><h2 style="margin-top:20px">Payment</h2><label class="k-payment-option"><input type="radio" name="payment" value="COD" checked> <span><b>Cash on Delivery</b><br><small>Place the order and confirm it with KASHORIA.</small></span></label><label class="k-payment-option"><input type="radio" name="payment" value="UPI"> <span><b>UPI / Online Payment</b><br><small>Payment can be completed through the WhatsApp/Razorpay flow you configure.</small></span></label><h2 style="margin-top:20px">Order note</h2><textarea id="co-order-note" rows="3" placeholder="Any delivery or gift instructions..."></textarea><button class="k-order-btn" type="submit">Place Order ♡</button></section>
-<aside class="k-panel"><h2>Your order</h2><div id="co-items"></div><div class="k-summary-line"><span>Subtotal</span><strong id="co-sub">₹0</strong></div><div class="k-summary-line"><span>Discount</span><strong id="co-discount">₹0</strong></div><div class="k-summary-line"><span>Gift wrapping</span><strong id="co-giftwrap">₹0</strong></div><div class="k-summary-line"><span>Delivery</span><strong id="co-ship">₹0</strong></div><div class="k-summary-total"><span>Total</span><strong id="co-total">₹0</strong></div><p id="co-coupon" class="k-mini-note"></p><p class="k-admin-note">For this frontend build, order details are stored in this browser. Connect your live payment/order APIs before accepting online payments publicly.</p></aside></form></main>
-<script src="js/store.js"></script><script src="js/config.js"></script><script src="js/api.js"></script><script src="js/cart.js"></script><script src="js/wishlist.js"></script><script src="js/kashoria-enhancements.js"></script><script src="js/kashoria-all-features.js"></script>
-<script src="js/kashoria-master-v3.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>Checkout | KASHORIA</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/kashoria-upgrade.css">
+  <link rel="stylesheet" href="css/kashoria-features.css">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    .delivery-check-box {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: #faf5f7;
+      border: 1px solid #ead6dd;
+      font-size: 14px;
+    }
+
+    .delivery-check-box strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .delivery-pending {
+      color: #777;
+    }
+
+    .delivery-confirmed {
+      color: #557d55;
+    }
+
+    .online-payment-box {
+      display: none;
+      margin-top: 14px;
+      padding: 18px;
+      border-radius: 14px;
+      background: #fff8fa;
+      border: 1px solid #e6cbd4;
+    }
+
+    .online-payment-box.show {
+      display: block;
+    }
+
+    .payment-number {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin: 8px 0;
+    }
+
+    .payment-message {
+      font-size: 13px;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+
+    .payment-confirm {
+      display: flex;
+      gap: 9px;
+      align-items: flex-start;
+      margin-top: 14px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .payment-confirm input {
+      margin-top: 3px;
+    }
+
+    .checkout-warning {
+      margin-top: 10px;
+      color: #a05a68;
+      font-size: 13px;
+    }
+
+    .k-order-btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="k-site-header">
+
+  <a class="k-site-brand" href="index.html">
+    <img
+      src="images/logo.png"
+      class="k-site-logo"
+      alt="KASHORIA"
+    >
+  </a>
+
+  <nav class="k-site-nav">
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="contact.html">Contact</a>
+    <a href="custom-order.html">Custom</a>
+    <a href="wishlist.html">
+      Wishlist ♡ <span data-wishlist-count>0</span>
+    </a>
+    <a href="cart.html">
+      Cart 🛒 <span data-cart-count>0</span>
+    </a>
+    <a href="login.html">Login</a>
+  </nav>
+
+</header>
+
+<section class="k-page-hero">
+  <div class="eyebrow">Almost yours</div>
+  <h1>Checkout</h1>
+  <p>Confirm your delivery, payment and gift details.</p>
+</section>
+
+
+<main class="k-checkout">
+
+<form id="checkout-form" class="k-checkout-grid">
+
+<section class="k-panel">
+
+  <h2>1. Delivery Details</h2>
+
+  <div class="k-form-grid">
+
+    <div class="k-form-group">
+      <label>Full name</label>
+      <input id="co-name" required>
+    </div>
+
+    <div class="k-form-group">
+      <label>Phone</label>
+      <input
+        id="co-phone"
+        type="tel"
+        inputmode="numeric"
+        pattern="[0-9]{10}"
+        maxlength="10"
+        required
+      >
+    </div>
+
+    <div class="k-form-group full">
+      <label>Email</label>
+      <input
+        id="co-email"
+        type="email"
+        required
+      >
+    </div>
+
+    <div class="k-form-group full">
+      <label>Address</label>
+      <textarea
+        id="co-address"
+        rows="3"
+        required
+      ></textarea>
+    </div>
+
+    <!-- CITY FIRST -->
+    <div class="k-form-group">
+      <label>City</label>
+      <input
+        id="co-city"
+        placeholder="Enter your city"
+        autocomplete="address-level2"
+        required
+      >
+    </div>
+
+    <!-- PINCODE SECOND -->
+    <div class="k-form-group">
+      <label>Pincode</label>
+      <input
+        id="co-pincode"
+        inputmode="numeric"
+        pattern="[0-9]{6}"
+        maxlength="6"
+        placeholder="6-digit pincode"
+        autocomplete="postal-code"
+        required
+      >
+    </div>
+
+  </div>
+
+
+  <!-- DELIVERY CHARGE -->
+  <div
+    id="co-delivery-check"
+    class="delivery-check-box delivery-pending"
+  >
+    <strong>🚚 Delivery Charge</strong>
+    <span id="co-delivery-message">
+      Enter your city and 6-digit pincode to check the delivery charge.
+    </span>
+  </div>
+
+
+  <h2 style="margin-top:24px">
+    2. Online Payment
+  </h2>
+
+  <!-- ONLY ONLINE PAYMENT -->
+  <label class="k-payment-option">
+
+    <input
+      type="radio"
+      name="payment"
+      value="UPI"
+      checked
+    >
+
+    <span>
+      <b>💳 Online Payment</b>
+      <br>
+      <small>
+        Pay online using UPI / PhonePe / Google Pay.
+      </small>
+    </span>
+
+  </label>
+
+
+  <!-- PAYMENT DETAILS -->
+  <div
+    id="online-payment-box"
+    class="online-payment-box show"
+  >
+
+    <strong>💳 Pay Online to Confirm Your Order</strong>
+
+    <div class="payment-message">
+
+      Please make the payment of the
+      <b>exact Grand Total</b>
+      shown on this checkout page.
+
+      <br><br>
+
+      You can pay using
+      <b>UPI / PhonePe / Google Pay</b>
+      to the number below:
+
+    </div>
+
+    <div class="payment-number">
+      📱 77789 75203
+    </div>
+
+    <div class="payment-message">
+
+      After completing the payment, please confirm below
+      and place your order.
+
+      <br>
+
+      <b>Important:</b>
+      Your order will be checked and confirmed by KASHORIA
+      after payment verification.
+
+    </div>
+
+
+    <label class="payment-confirm">
+
+      <input
+        type="checkbox"
+        id="payment-confirmed"
+        required
+      >
+
+      <span>
+        I have completed the online payment to the KASHORIA
+        payment number shown above.
+      </span>
+
+    </label>
+
+  </div>
+
+
+  <h2 style="margin-top:24px">
+    3. Order Note
+  </h2>
+
+  <textarea
+    id="co-order-note"
+    rows="3"
+    placeholder="Any delivery or gift instructions..."
+  ></textarea>
+
+
+  <button
+    class="k-order-btn"
+    type="submit"
+    id="place-order-btn"
+  >
+    Place Order ♡
+  </button>
+
+</section>
+
+
+<!-- ORDER SUMMARY -->
+
+<aside class="k-panel">
+
+  <h2>Your Order</h2>
+
+  <div id="co-items"></div>
+
+  <div class="k-summary-line">
+    <span>Subtotal</span>
+    <strong id="co-sub">₹0</strong>
+  </div>
+
+  <div class="k-summary-line">
+    <span>Discount</span>
+    <strong id="co-discount">₹0</strong>
+  </div>
+
+  <div class="k-summary-line">
+    <span>Gift wrapping</span>
+    <strong id="co-giftwrap">₹0</strong>
+  </div>
+
+  <div class="k-summary-line">
+    <span>Delivery</span>
+    <strong id="co-ship">—</strong>
+  </div>
+
+  <div class="k-summary-total">
+    <span>Total</span>
+    <strong id="co-total">—</strong>
+  </div>
+
+  <p
+    id="co-coupon"
+    class="k-mini-note"
+  ></p>
+
+  <p class="k-admin-note">
+    Delivery charges are calculated from the city and pincode
+    entered above. The final delivery charge is also verified
+    by the KASHORIA server.
+  </p>
+
+</aside>
+
+</form>
+
+</main>
+
+
+<script src="js/store.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/wishlist.js"></script>
+<script src="js/kashoria-enhancements.js"></script>
+<script src="js/kashoria-all-features.js"></script>
+<script src="js/kashoria-master-v3.js"></script>
+
+</body>
+</html>

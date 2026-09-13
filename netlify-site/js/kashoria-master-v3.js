@@ -20,6 +20,7 @@ const CFG = Object.assign({
   },
 
   whatsapp: '917778975203',
+  paymentNumber: '7778975203',
   instagram: 'https://www.instagram.com/kashoria_/'
 }, window.KASHORIA_CONFIG || {});
 
@@ -157,14 +158,30 @@ const CFG = Object.assign({
   function toast(msg) { if(typeof window.kashoriaToast==='function') window.kashoriaToast(msg); else console.log('[KASHORIA]',msg); }
 
 function getDeliveryCharge(city = '', pincode = '', subtotal = 0) {
-  // Free delivery on orders ₹1299+
-  if (subtotal >= CFG.freeShippingAt) return 0;
-  if (subtotal <= 0) return 0;
+
+  if (subtotal <= 0) return null;
 
   const cityName = String(city || '').trim().toLowerCase();
   const pin = String(pincode || '').replace(/\D/g, '');
 
-  // Ahmedabad
+  /*
+    Do NOT calculate delivery until the customer
+    has entered a complete 6-digit pincode.
+  */
+  if (pin.length !== 6) {
+    return null;
+  }
+
+  /*
+    Free delivery on orders ₹1299+
+  */
+  if (subtotal >= CFG.freeShippingAt) {
+    return 0;
+  }
+
+  /*
+    Ahmedabad
+  */
   if (
     cityName.includes('ahmedabad') ||
     pin.startsWith('380') ||
@@ -173,16 +190,24 @@ function getDeliveryCharge(city = '', pincode = '', subtotal = 0) {
     return CFG.shippingRates.ahmedabad;
   }
 
-  // Gujarat pincodes: 36xxxx - 39xxxx
+  /*
+    Gujarat
+    36xxxx - 39xxxx
+  */
   const pinFirst2 = Number(pin.substring(0, 2));
 
-  if (pin.length === 6 && pinFirst2 >= 36 && pinFirst2 <= 39) {
+  if (
+    pinFirst2 >= 36 &&
+    pinFirst2 <= 39
+  ) {
     return CFG.shippingRates.gujarat;
   }
 
-  // Maharashtra: 40xxxx - 44xxxx
-  // Rajasthan: 30xxxx - 34xxxx
-  // Madhya Pradesh: 45xxxx - 48xxxx
+  /*
+    Rajasthan
+    Maharashtra
+    Madhya Pradesh
+  */
   if (
     (pinFirst2 >= 30 && pinFirst2 <= 34) ||
     (pinFirst2 >= 40 && pinFirst2 <= 44) ||
@@ -191,22 +216,30 @@ function getDeliveryCharge(city = '', pincode = '', subtotal = 0) {
     return CFG.shippingRates.nearbyStates;
   }
 
-  // Other locations
+  /*
+    Other Indian states
+  */
   return CFG.shippingRates.otherStates;
 }
 
-function totals(items=cart(), city='', pincode='') {
+function totals(items = cart(), city = '', pincode = '') {
+
   const subtotal = items.reduce(
-    (s,x) => s + (Number(x.price)||0) * (Number(x.quantity)||1),
+    (s, x) =>
+      s +
+      (Number(x.price) || 0) *
+      (Number(x.quantity) || 1),
     0
   );
 
   const giftWrap = items.reduce(
-    (s,x) => s + (
-      x.giftWrap
-        ? CFG.giftWrapFee * (Number(x.quantity)||1)
-        : 0
-    ),
+    (s, x) =>
+      s +
+      (
+        x.giftWrap
+          ? CFG.giftWrapFee * (Number(x.quantity) || 1)
+          : 0
+      ),
     0
   );
 
@@ -214,18 +247,38 @@ function totals(items=cart(), city='', pincode='') {
     subtotal,
     Math.max(
       0,
-      Number(sessionStorage.getItem('kashoria_discount') || 0)
+      Number(
+        sessionStorage.getItem('kashoria_discount') || 0
+      )
     )
   );
 
-  const shipping = getDeliveryCharge(city, pincode, subtotal);
+  const shipping = getDeliveryCharge(
+    city,
+    pincode,
+    subtotal
+  );
+
+  /*
+    Do not show a final total until
+    delivery location has been entered.
+  */
+  const total =
+    shipping === null
+      ? null
+      : Math.max(
+          0,
+          subtotal - discount
+        ) +
+        giftWrap +
+        shipping;
 
   return {
     subtotal,
     giftWrap,
     discount,
     shipping,
-    total: Math.max(0, subtotal - discount) + giftWrap + shipping
+    total
   };
 }
 
@@ -381,6 +434,28 @@ const box = $('co-items');
   const form = e.currentTarget;
 
   if (!validateCheckoutForm(form)) return;
+  const paymentMethod =
+  document.querySelector(
+    'input[name="payment"]:checked'
+  )?.value;
+
+if (paymentMethod !== 'UPI') {
+  toast('Please select Online Payment.');
+  return;
+}
+
+const paymentConfirmed =
+  $('payment-confirmed')?.checked;
+
+if (!paymentConfirmed) {
+  toast(
+    'Please complete the online payment and tick the payment confirmation box.'
+  );
+
+  $('payment-confirmed')?.focus();
+
+  return;
+}
 
   const button = form.querySelector('button[type="submit"]');
 
@@ -401,14 +476,30 @@ const box = $('co-items');
     };
 
     const paymentMethod =
-      document.querySelector('input[name="payment"]:checked')?.value === "UPI"
-        ? "UPI"
-        : "COD";
+  document.querySelector(
+    'input[name="payment"]:checked'
+  )?.value;
 
+if (paymentMethod !== 'UPI') {
+  toast('Please select Online Payment.');
+  return;
+}
     const orderNote = $("co-order-note")?.value.trim() || "";
     const couponCode = sessionStorage.getItem("kashoria_coupon") || "";
     const t = totals(c, customer.city, customer.pincode); 
-    
+    if (
+  t.shipping === null ||
+  t.total === null
+) {
+  toast(
+    'Please enter a valid 6-digit pincode to confirm your delivery charge.'
+  );
+
+  $('co-pincode')?.focus();
+
+  return;
+}
+
     // Save the order in MySQL through the existing KASHORIA API.
     const payload = {
       customer,
@@ -505,7 +596,9 @@ const box = $('co-items');
       `City: ${customer.city}`,
       `Pincode: ${customer.pincode}`,
       "",
-      `💳 Payment Method: ${paymentMethod}`,
+      `💳 Payment Method: Online Payment`,
+`📱 Payment Number: 77789 75203`,
+`💰 Payment Verification: Customer confirmed payment`,
       couponCode ? `🏷️ Coupon: ${couponCode}` : "",
       orderNote ? `📝 Order Note: ${orderNote}` : "",
       "",
@@ -631,20 +724,91 @@ const box = $('co-items');
 const pincodeInput = $('co-pincode');
 
 function refreshCheckoutShipping() {
+
   if (!$('checkout-form')) return;
 
   const c = cart();
-  const city = cityInput?.value || '';
-  const pincode = pincodeInput?.value || '';
 
-  const t = totals(c, city, pincode);
+  const city = String(
+    $('co-city')?.value || ''
+  ).trim();
 
-  const set = (id, value) => {
-    if ($(id)) $(id).textContent = value;
-  };
+  const pincode = String(
+    $('co-pincode')?.value || ''
+  ).replace(/\D/g, '');
 
-  set('co-ship', t.shipping ? money(t.shipping) : 'FREE');
-  set('co-total', money(t.total));
+  const t = totals(
+    c,
+    city,
+    pincode
+  );
+
+  const shipEl = $('co-ship');
+  const totalEl = $('co-total');
+  const messageEl = $('co-delivery-message');
+  const boxEl = $('co-delivery-check');
+
+  if (!shipEl || !totalEl) return;
+
+
+  /*
+    City + pincode not complete
+  */
+  if (pincode.length !== 6) {
+
+    shipEl.textContent = '—';
+    totalEl.textContent = '—';
+
+    if (messageEl) {
+      messageEl.textContent =
+        'Enter your city and 6-digit pincode to check the delivery charge.';
+    }
+
+    if (boxEl) {
+      boxEl.classList.remove('delivery-confirmed');
+      boxEl.classList.add('delivery-pending');
+    }
+
+    return;
+  }
+
+
+  /*
+    Valid pincode
+  */
+  if (t.shipping === 0) {
+
+    shipEl.textContent = 'FREE';
+
+    if (messageEl) {
+      messageEl.innerHTML =
+        '<b>✓ Free Delivery</b> — Your order qualifies for free delivery.';
+    }
+
+  } else {
+
+    shipEl.textContent =
+      money(t.shipping);
+
+    if (messageEl) {
+      messageEl.innerHTML =
+        '<b>✓ Delivery Charge Confirmed:</b> ' +
+        money(t.shipping) +
+        ' — This is the delivery charge included in your total.';
+    }
+  }
+
+
+  if (totalEl) {
+    totalEl.textContent =
+      money(t.total);
+  }
+
+
+  if (boxEl) {
+    boxEl.classList.remove('delivery-pending');
+    boxEl.classList.add('delivery-confirmed');
+  }
 }
 
 cityInput?.addEventListener('input', refreshCheckoutShipping);
