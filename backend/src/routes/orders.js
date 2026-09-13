@@ -194,10 +194,11 @@ async function createDbOrder({
        PINCODE VALIDATION
        ----------------------------------------------------- */
 
-    const cleanPincode = String(pincode || "").replace(
-      /\D/g,
-      ""
-    );
+ const shippingcharge = getDeliveryCharge(
+  city,
+  cleanPincode,
+  subtotal
+);
 
     if (cleanPincode.length !== 6) {
       const e = new Error(
