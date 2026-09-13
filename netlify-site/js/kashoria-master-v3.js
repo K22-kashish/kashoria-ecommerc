@@ -6,13 +6,22 @@
 
   const API_BASE = String(window.KASHORIA_API || 'https://kashoria-ecommerce.onrender.com').replace(/\/+$/, '');
 
-  const CFG = Object.assign({
-    freeShippingAt: 1299,
-    shippingFee: 80,
-    giftWrapFee: 40,
-    whatsapp: '917778975203',
-    instagram: 'https://www.instagram.com/kashoria_/'
-  }, window.KASHORIA_CONFIG || {});
+const CFG = Object.assign({
+  freeShippingAt: 1299,
+  giftWrapFee: 40,
+
+  // KASHORIA location-based delivery charges
+  shippingRates: {
+    ahmedabad: 50,
+    gujarat: 70,
+    nearbyStates: 90,
+    otherStates: 120,
+    unknown: 120
+  },
+
+  whatsapp: '917778975203',
+  instagram: 'https://www.instagram.com/kashoria_/'
+}, window.KASHORIA_CONFIG || {});
 
   const $ = (id) => document.getElementById(id);
   const money = (n) => '₹' + Math.round(Number(n) || 0).toLocaleString('en-IN');
@@ -147,13 +156,78 @@
   }
   function toast(msg) { if(typeof window.kashoriaToast==='function') window.kashoriaToast(msg); else console.log('[KASHORIA]',msg); }
 
-  function totals(items=cart()) {
-    const subtotal=items.reduce((s,x)=>s+(Number(x.price)||0)*(Number(x.quantity)||1),0);
-    const giftWrap=items.reduce((s,x)=>s+(x.giftWrap ? CFG.giftWrapFee*(Number(x.quantity)||1) : 0),0);
-    const discount=Math.min(subtotal,Math.max(0,Number(sessionStorage.getItem('kashoria_discount')||0)));
-    const shipping=subtotal===0 ? 0 : (subtotal>=CFG.freeShippingAt ? 0 : CFG.shippingFee);
-    return {subtotal,giftWrap,discount,shipping,total:Math.max(0,subtotal-discount)+giftWrap+shipping};
+function getDeliveryCharge(city = '', pincode = '', subtotal = 0) {
+  // Free delivery on orders ₹1299+
+  if (subtotal >= CFG.freeShippingAt) return 0;
+  if (subtotal <= 0) return 0;
+
+  const cityName = String(city || '').trim().toLowerCase();
+  const pin = String(pincode || '').replace(/\D/g, '');
+
+  // Ahmedabad
+  if (
+    cityName.includes('ahmedabad') ||
+    pin.startsWith('380') ||
+    pin.startsWith('382')
+  ) {
+    return CFG.shippingRates.ahmedabad;
   }
+
+  // Gujarat pincodes: 36xxxx - 39xxxx
+  const pinFirst2 = Number(pin.substring(0, 2));
+
+  if (pin.length === 6 && pinFirst2 >= 36 && pinFirst2 <= 39) {
+    return CFG.shippingRates.gujarat;
+  }
+
+  // Maharashtra: 40xxxx - 44xxxx
+  // Rajasthan: 30xxxx - 34xxxx
+  // Madhya Pradesh: 45xxxx - 48xxxx
+  if (
+    (pinFirst2 >= 30 && pinFirst2 <= 34) ||
+    (pinFirst2 >= 40 && pinFirst2 <= 44) ||
+    (pinFirst2 >= 45 && pinFirst2 <= 48)
+  ) {
+    return CFG.shippingRates.nearbyStates;
+  }
+
+  // Other locations
+  return CFG.shippingRates.otherStates;
+}
+
+function totals(items=cart(), city='', pincode='') {
+  const subtotal = items.reduce(
+    (s,x) => s + (Number(x.price)||0) * (Number(x.quantity)||1),
+    0
+  );
+
+  const giftWrap = items.reduce(
+    (s,x) => s + (
+      x.giftWrap
+        ? CFG.giftWrapFee * (Number(x.quantity)||1)
+        : 0
+    ),
+    0
+  );
+
+  const discount = Math.min(
+    subtotal,
+    Math.max(
+      0,
+      Number(sessionStorage.getItem('kashoria_discount') || 0)
+    )
+  );
+
+  const shipping = getDeliveryCharge(city, pincode, subtotal);
+
+  return {
+    subtotal,
+    giftWrap,
+    discount,
+    shipping,
+    total: Math.max(0, subtotal - discount) + giftWrap + shipping
+  };
+}
 
   window.KASHORIA_FEATURES=Object.assign(window.KASHORIA_FEATURES||{}, {money,esc,read,write});
   window.kashoriaCartTotals=totals;
@@ -262,7 +336,11 @@
 
   function renderCheckout(){
     if(!$('checkout-form'))return;
-    const c=cart(),t=totals(c),box=$('co-items');
+    const c=cart();
+const city = $('co-city')?.value || '';
+const pincode = $('co-pincode')?.value || '';
+const t = totals(c, city, pincode);
+const box = $('co-items');
     if(box)box.innerHTML=c.length?c.map(x=>`<div class="k-checkout-item" style="display:flex;gap:12px;padding:12px 0;border-bottom:1px dashed #eadfd9"><img src="${esc(x.image)}" alt="${esc(x.name)}" style="width:58px;height:58px;object-fit:cover;border-radius:12px"><div style="flex:1"><strong>${esc(x.name)}</strong><div class="cart-meta">Category: ${esc(categoryName(x.category))}</div><div class="cart-meta" style="display:flex;align-items:center;gap:7px"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;border:1px solid #d8cbc5;background:${swatchColor(x.color)}"></span><span>Colour: <b>${esc(x.color)}</b></span></div><div class="cart-meta">Quantity: ${Number(x.quantity)||1}</div>${x.giftWrap?`<div class="cart-meta">Gift wrapping: +${money(CFG.giftWrapFee)} × quantity</div>`:''}</div><strong>${money(Number(x.price)*(Number(x.quantity)||1))}</strong></div>`).join(''):'<div class="k-empty" style="padding:25px;text-align:center"><p>Your cart is empty.</p><a href="shop.html" class="k-primary-btn">Shop Collection</a></div>';
     const set=(id,v)=>{if($(id))$(id).textContent=v;};set('co-sub',money(t.subtotal));set('co-discount',t.discount?'-'+money(t.discount):money(0));set('co-giftwrap',money(t.giftWrap));set('co-ship',t.shipping?money(t.shipping):'FREE');set('co-total',money(t.total));
     const submit=$('checkout-form').querySelector('button[type="submit"]');if(submit){submit.disabled=!c.length;submit.textContent=c.length?'Place Order ♡':'Cart is Empty';submit.style.pointerEvents='auto';submit.style.cursor=c.length?'pointer':'not-allowed';}
@@ -329,8 +407,8 @@
 
     const orderNote = $("co-order-note")?.value.trim() || "";
     const couponCode = sessionStorage.getItem("kashoria_coupon") || "";
-    const t = totals(c);
-
+    const t = totals(c, customer.city, customer.pincode); 
+    
     // Save the order in MySQL through the existing KASHORIA API.
     const payload = {
       customer,
@@ -549,6 +627,30 @@
     // Re-normalize old cart records using the API catalog, then render again.
     const normalized=cart();write('cart',normalized);updateCounts();renderCartPage();renderCheckout();
     await initProductPage();
+    const cityInput = $('co-city');
+const pincodeInput = $('co-pincode');
+
+function refreshCheckoutShipping() {
+  if (!$('checkout-form')) return;
+
+  const c = cart();
+  const city = cityInput?.value || '';
+  const pincode = pincodeInput?.value || '';
+
+  const t = totals(c, city, pincode);
+
+  const set = (id, value) => {
+    if ($(id)) $(id).textContent = value;
+  };
+
+  set('co-ship', t.shipping ? money(t.shipping) : 'FREE');
+  set('co-total', money(t.total));
+}
+
+cityInput?.addEventListener('input', refreshCheckoutShipping);
+pincodeInput?.addEventListener('input', refreshCheckoutShipping);
+cityInput?.addEventListener('change', refreshCheckoutShipping);
+pincodeInput?.addEventListener('change', refreshCheckoutShipping);
   }
   document.addEventListener('DOMContentLoaded',init);
 })();

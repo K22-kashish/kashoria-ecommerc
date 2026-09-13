@@ -6,8 +6,43 @@ import { requireAuth, requireAdmin } from "../middleware/auth.js";
 import { makeOrderNumber } from "../utils/order.js";
 
 const router=Router();
-const freeAt=Number(process.env.FREE_SHIPPING_AT||1299);
-const shipFee=Number(process.env.SHIPPING_FEE||80);
+const freeAt = Number(process.env.FREE_SHIPPING_AT || 1299);
+
+function getDeliveryCharge(city = '', pincode = '', subtotal = 0) {
+  if (subtotal >= freeAt) return 0;
+  if (subtotal <= 0) return 0;
+
+  const cityName = String(city || '').trim().toLowerCase();
+  const pin = String(pincode || '').replace(/\D/g, '');
+
+  // Ahmedabad
+  if (
+    cityName.includes('ahmedabad') ||
+    pin.startsWith('380') ||
+    pin.startsWith('382')
+  ) {
+    return 50;
+  }
+
+  // Gujarat
+  const pinFirst2 = Number(pin.substring(0, 2));
+
+  if (pin.length === 6 && pinFirst2 >= 36 && pinFirst2 <= 39) {
+    return 70;
+  }
+
+  // Rajasthan, Maharashtra, Madhya Pradesh
+  if (
+    (pinFirst2 >= 30 && pinFirst2 <= 34) ||
+    (pinFirst2 >= 40 && pinFirst2 <= 44) ||
+    (pinFirst2 >= 45 && pinFirst2 <= 48)
+  ) {
+    return 90;
+  }
+
+  // Other states
+  return 120;
+}
 const giftWrapFee=40;
 function getRazorpay(){if(!process.env.RAZORPAY_KEY_ID||!process.env.RAZORPAY_KEY_SECRET)return null;return new Razorpay({key_id:process.env.RAZORPAY_KEY_ID,key_secret:process.env.RAZORPAY_KEY_SECRET});}
 async function loadProducts(conn,items){const ids=[...new Set(items.map(x=>String(x.productId||x.id||"")))];if(!ids.length)return [];const ph=ids.map(()=>"?").join(",");const [rows]=await conn.query(`SELECT * FROM products WHERE id IN (${ph}) AND active=1`,ids);return rows;}
@@ -21,7 +56,7 @@ async function createDbOrder({userId,body,paymentMethod="COD"}){return withTrans
  const subtotal=normalized.reduce((s,{p,q})=>s+Number(p.price)*q,0);
  const coupon=await couponInfo(conn,body.couponCode,subtotal);
  const giftWrap=normalized.reduce((s,{x,q})=>s+(x.giftWrap?giftWrapFee*q:0),0);
- const shipping=subtotal>=freeAt?0:shipFee;const total=Math.max(0,subtotal-coupon.discount)+shipping+giftWrap;const orderNo=makeOrderNumber();
+const shipping = getDeliveryCharge(city, pincode, subtotal);const total=Math.max(0,subtotal-coupon.discount)+shipping+giftWrap;const orderNo=makeOrderNumber();
  const [r]=await conn.query(`INSERT INTO orders(order_number,user_id,customer_name,phone,email,address,city,pincode,payment_method,payment_status,order_status,subtotal,shipping_fee,total,coupon_code,discount,gift_wrap_fee,gift_message,notes) VALUES(?,?,?,?,?,?,?,?,?,'PENDING','NEW',?,?,?,?,?,?,?,?)`,[orderNo,userId||null,name.trim(),phone,email.trim().toLowerCase(),address,city,pincode,paymentMethod,subtotal,shipping,total,coupon.code,coupon.discount,giftWrap,String(body.giftMessage||""),String(body.orderNote||"")]);
  for(const {p,q,x} of normalized){const line=Number(p.price)*q;await conn.query(`INSERT INTO order_items(order_id,product_id,product_name,product_image,unit_price,quantity,line_total,color,customization_note,reference_image,gift_wrap,gift_message) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`,[r.insertId,p.id,p.name,p.image,p.price,q,line,String(x.color||"As shown in product image"),String(x.note||""),String(x.referenceImage||""),!!x.giftWrap,String(x.giftMessage||"")]);if(paymentMethod==="COD")await conn.query("UPDATE products SET stock=stock-? WHERE id=?",[q,p.id]);}
  if(coupon.code)await conn.query("UPDATE coupons SET used_count=used_count+1 WHERE code=?",[coupon.code]);
