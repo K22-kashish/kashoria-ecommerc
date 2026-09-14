@@ -792,6 +792,77 @@ router.get("/", async (req, res, next) => {
 });
 
 // =========================================================
+// ADMIN: UPDATE ORDER STATUS
+// =========================================================
+
+router.patch(
+  "/:orderNumber/status",
+  requireAuth,
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const { orderNumber } = req.params;
+      const { status } = req.body;
+
+      const newStatus = String(status || "")
+        .trim()
+        .toUpperCase();
+
+      const allowedStatuses = [
+        "NEW",
+        "CONFIRMED",
+        "PROCESSING",
+        "SHIPPED",
+        "DELIVERED",
+        "CANCELLED"
+      ];
+
+      if (!allowedStatuses.includes(newStatus)) {
+        return res.status(400).json({
+          ok: false,
+          message: "Invalid order status"
+        });
+      }
+
+      const [result] = await pool.query(
+        `
+        UPDATE orders
+        SET
+          order_status = ?,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE order_number = ?
+        `,
+        [newStatus, orderNumber]
+      );
+
+      if (!result.affectedRows) {
+        return res.status(404).json({
+          ok: false,
+          message: "Order not found"
+        });
+      }
+
+      return res.json({
+        ok: true,
+        message: "Order status updated successfully",
+        orderStatus: newStatus
+      });
+
+    } catch (error) {
+      console.error(
+        "ORDER STATUS ERROR:",
+        error
+      );
+
+      return res.status(500).json({
+        ok: false,
+        message: "Could not update order status"
+      });
+    }
+  }
+);
+
+// =========================================================
 // ADMIN: UPDATE PAYMENT STATUS
 // =========================================================
 
