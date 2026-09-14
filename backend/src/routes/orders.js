@@ -797,6 +797,7 @@ router.get("/", async (req, res, next) => {
 
 router.patch(
   "/:orderNumber/payment-status",
+  requireAuth,
   requireAdmin,
   async (req, res) => {
     try {
