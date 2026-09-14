@@ -189,6 +189,73 @@ async function updateOrderStatus(
 window.updateOrderStatus =
   updateOrderStatus;
 
+  /* =========================================================
+   SHIPPING DETAILS
+   ========================================================= */
+
+async function updateShippingDetails(
+  orderNumber,
+  button
+){
+  const card =
+    button.closest('.k-admin-order-card');
+
+  if(!card){
+    alert('Order card not found.');
+    return;
+  }
+
+  const courierInput =
+    card.querySelector('[data-courier]');
+
+  const trackingInput =
+    card.querySelector('[data-tracking-id]');
+
+  const courier =
+    courierInput
+      ? courierInput.value.trim()
+      : '';
+
+  const trackingId =
+    trackingInput
+      ? trackingInput.value.trim()
+      : '';
+
+  try{
+
+    await api.request(
+      '/api/orders/' +
+      encodeURIComponent(orderNumber) +
+      '/shipping',
+      {
+        method:'PATCH',
+
+        body:JSON.stringify({
+          courier,
+          trackingId
+        })
+      }
+    );
+
+    alert(
+      'Shipping details saved successfully.'
+    );
+
+    await load();
+
+  }catch(e){
+
+    alert(
+      e.message ||
+      'Could not update shipping details.'
+    );
+
+  }
+}
+
+window.updateShippingDetails =
+  updateShippingDetails;
+
 /* =========================================================
    ORDER CARD
    ========================================================= */
@@ -566,6 +633,79 @@ const paymentStatus =
         : ''
     }
 
+
+    <!-- SHIPPING DETAILS -->
+
+<div
+  class="k-admin-section"
+>
+
+  <h4>
+    📦 Shipping Details
+  </h4>
+
+  <div
+    class="k-admin-actions"
+    style="align-items:stretch;"
+  >
+
+    <input
+      type="text"
+      data-courier
+      placeholder="Courier name e.g. BlueDart"
+      value="${esc(o.courier || '')}"
+      style="
+        flex:1;
+        min-width:220px;
+      "
+    >
+
+    <input
+      type="text"
+      data-tracking-id
+      placeholder="Tracking ID"
+      value="${esc(o.tracking_id || '')}"
+      style="
+        flex:1;
+        min-width:220px;
+      "
+    >
+
+    <button
+      type="button"
+      onclick="
+        window.updateShippingDetails(
+          '${esc(o.order_number)}',
+          this
+        )
+      "
+      style="
+        background:#5b4640;
+        color:white;
+        font-weight:700;
+      "
+    >
+      Save Shipping Details
+    </button>
+
+  </div>
+
+  ${
+    o.tracking_id
+      ? `
+        <div class="k-admin-muted">
+          Current tracking:
+          ${esc(o.tracking_id)}
+        </div>
+      `
+      : `
+        <div class="k-admin-muted">
+          No tracking ID added yet.
+        </div>
+      `
+  }
+
+</div>
 
     <!-- ORDER STATUS -->
 
