@@ -1,27 +1,53 @@
 import jwt from "jsonwebtoken";
-import { requireAuth, requireAdmin } from "../middleware/auth.js";
 
 export function signToken(user) {
   return jwt.sign(
-    { id: user.id, email: user.email, role: user.role, name: user.name },
+    {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      name: user.name,
+    },
     process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
+    {
+      expiresIn: process.env.JWT_EXPIRES_IN || "7d",
+    }
   );
 }
 
 export function requireAuth(req, res, next) {
   const header = req.headers.authorization || "";
-  const token = header.startsWith("Bearer ") ? header.slice(7) : null;
-  if (!token) return res.status(401).json({ message: "Authentication required" });
+
+  const token = header.startsWith("Bearer ")
+    ? header.slice(7)
+    : null;
+
+  if (!token) {
+    return res.status(401).json({
+      message: "Authentication required",
+    });
+  }
+
   try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
+
     next();
   } catch {
-    return res.status(401).json({ message: "Invalid or expired token" });
+    return res.status(401).json({
+      message: "Invalid or expired token",
+    });
   }
 }
 
 export function requireAdmin(req, res, next) {
-  if (req.user?.role !== "admin") return res.status(403).json({ message: "Admin access required" });
+  if (req.user?.role !== "admin") {
+    return res.status(403).json({
+      message: "Admin access required",
+    });
+  }
+
   next();
 }
