@@ -50,4 +50,59 @@ router.put("/me",requireAuth,async(req,res,next)=>{
   }catch(e){next(e)}
 });
 
+/* =========================================================
+   ADMIN - UPDATE PAYMENT STATUS
+   ========================================================= */
+
+router.patch(
+  "/:orderNumber/payment-status",
+  requireAuth,
+  requireAdmin,
+  async (req, res, next) => {
+    try {
+      const allowedStatuses = [
+        "PENDING",
+        "PAID",
+        "FAILED",
+        "REFUNDED",
+      ];
+
+      const paymentStatus = String(
+        req.body.paymentStatus || ""
+      ).toUpperCase();
+
+      if (!allowedStatuses.includes(paymentStatus)) {
+        return res.status(400).json({
+          message: "Invalid payment status",
+        });
+      }
+
+      const [result] = await pool.query(
+        `
+          UPDATE orders
+          SET payment_status = ?
+          WHERE order_number = ?
+        `,
+        [
+          paymentStatus,
+          req.params.orderNumber,
+        ]
+      );
+
+      if (!result.affectedRows) {
+        return res.status(404).json({
+          message: "Order not found",
+        });
+      }
+
+      return res.json({
+        message: "Payment status updated successfully",
+        paymentStatus,
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
 export default router;
