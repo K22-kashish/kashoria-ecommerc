@@ -604,6 +604,7 @@ if (paymentMethod !== 'UPI') {
       "",
       "💗 Ordered from KASHORIA Website"
     ].filter(Boolean).join("\n");
+    
 
     // Keep a backup of the complete successful order in the browser.
     localStorage.setItem(
@@ -818,3 +819,64 @@ pincodeInput?.addEventListener('change', refreshCheckoutShipping);
   }
   document.addEventListener('DOMContentLoaded',init);
 })();
+
+
+
+// =========================================================
+// ADMIN: UPDATE SHIPPING DETAILS
+// =========================================================
+
+router.patch(
+  "/:orderNumber/shipping",
+  requireAuth,
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const { orderNumber } = req.params;
+
+      const courier = String(req.body.courier || "").trim();
+      const trackingId = String(req.body.trackingId || "").trim();
+
+      const [result] = await pool.query(
+        `
+        UPDATE orders
+        SET
+          courier = ?,
+          tracking_id = ?,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE order_number = ?
+        `,
+        [
+          courier || null,
+          trackingId || null,
+          orderNumber
+        ]
+      );
+
+      if (!result.affectedRows) {
+        return res.status(404).json({
+          ok: false,
+          message: "Order not found"
+        });
+      }
+
+      return res.json({
+        ok: true,
+        message: "Shipping details updated successfully",
+        courier: courier || null,
+        trackingId: trackingId || null
+      });
+
+    } catch (error) {
+      console.error(
+        "SHIPPING DETAILS ERROR:",
+        error
+      );
+
+      return res.status(500).json({
+        ok: false,
+        message: "Could not update shipping details"
+      });
+    }
+  }
+);
