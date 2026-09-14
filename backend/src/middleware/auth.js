@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { requireAuth, requireAdmin } from "../middleware/auth.js";
 
 export function signToken(user) {
   return jwt.sign(
