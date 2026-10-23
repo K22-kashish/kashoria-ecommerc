@@ -79,5 +79,18 @@ app.use((err,req,res,next)=>{
   res.status(status).json({message:status===500?"Internal server error":err.message});
 });
 
+app.get("/", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "public", "index.html")
+  );
+});
+
+app.get("/", (req, res) => {
+  res.status(200).json({
+    ok: true,
+    message: "KASHORIA API is running"
+  });
+});
+
 const port=Number(process.env.PORT||5000);
 app.listen(port, "0.0.0.0", ()=>console.log(`KASHORIA backend running on port ${port}`));
