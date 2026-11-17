@@ -725,7 +725,7 @@ window.KASHORIA_PRODUCTS = [
     "name": "Sunflower Hairband",
     "category": "hairaccessories",
     "image": "images/sunflower hairband.jpeg",
-    "price": 149,
+    "price": 199,
     "badge": "New",
     "rating": 5
   },
