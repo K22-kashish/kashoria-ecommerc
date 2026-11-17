@@ -791,7 +791,16 @@ window.KASHORIA_PRODUCTS = [
     "price": 149,
     "badge": "New",
     "rating": 5
-  }
+  },
+  {
+    "id": "Rose-Gajra hair clip",
+    "name": "Rose-Gajra hair clip",
+    "category": "hairaccessories  ",
+    "image": "images/Rose-Gajra hair clip.jpg",
+    "price": 249,
+    "badge": "New",
+    "rating": 5
+  },
 ];
 window.KASHORIA_CONFIG = {
   instagram: "https://www.instagram.com/kashoria_/",

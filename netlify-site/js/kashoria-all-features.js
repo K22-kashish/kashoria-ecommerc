@@ -75,7 +75,7 @@
       'daisy-keychain':['images/daisy keychain.jpg','images/daisy keychain2.jpeg'],
       'bow-keychain':['images/bow keychain.jpeg','images/bow keychain.jpg'],
       'butterfly-bag-charm':['images/butterfly bag charm.jpg','images/butterfly bag charm 2.jpg'],
-      'mini-flower-bouquet-keychain':['images/mini flower bouquet keychain.jpeg','images/mini flower bouquet keychain2.jpeg']
+      'mini-flower-bouquet-keychain':['images/mini flower bouquet keychain.jpeg','images/mini flower bouquet keychain2.jpeg'],'Rose-Gajra hair clip':['images/Rose-Gajra hair clip.jpeg']
     };
     if(img){
       const gallery=galleryMap[p.id]||[p.image];
