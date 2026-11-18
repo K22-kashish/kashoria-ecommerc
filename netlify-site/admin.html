@@ -22,7 +22,58 @@
 <div class="k-admin-top"><div><div class="eyebrow">Store management</div><h1>KASHORIA Admin</h1><p id="admin-msg" class="k-admin-note">Loading MySQL data…</p></div><div><button id="refresh-admin">↻ Refresh</button> <button id="logout-admin">Logout</button></div></div>
 <div class="k-stat-grid"><div><b id="stat-products">0</b><span>Products</span></div><div><b id="stat-orders">0</b><span>Orders</span></div><div><b id="stat-sales">₹0</b><span>Order value</span></div><div><b id="stat-pending">0</b><span>Open orders</span></div></div>
 <h2>Orders saved in MySQL</h2><div class="k-admin-search"><input id="order-search" placeholder="Search order number, name, phone or city…"><button id="clear-order-search" class="k-admin-actions button">Clear</button></div><div id="admin-orders"></div>
-<h2>Products</h2><div id="admin-products" class="k-admin-table"></div>
+
+<h2>Products</h2>
+
+<button type="button" id="show-add-product">
+  + Add New Product
+</button>
+
+<form id="add-product-form" hidden class="k-form-grid">
+
+  <h3>Add New Product</h3>
+
+  <input id="new-product-name"
+    type="text" placeholder="Product Name" required>
+
+  <input id="new-product-category"
+    type="text" placeholder="Category" required>
+
+  <input id="new-product-price"
+    type="number" min="0.01" step="0.01"
+    placeholder="Price (₹)" required>
+
+  <input id="new-product-stock"
+    type="number" min="0"
+    placeholder="Stock Quantity" value="10" required>
+
+  <input id="new-product-badge"
+    type="text" placeholder="Product Badge (optional)">
+
+  <textarea id="new-product-description"
+    placeholder="Product Description"></textarea>
+
+ <label>Upload product photo from laptop</label>
+<input id="new-product-file"
+  type="file"
+  accept="image/jpeg,image/png,image/webp">
+
+<label>OR paste image URL</label>
+<input id="new-product-image-url"
+  type="url"
+  placeholder="https://example.com/image.jpg">
+
+  <button type="submit">Save Product</button>
+  <button type="button" id="cancel-add-product">
+    Cancel
+  </button>
+
+  <p id="product-form-message"></p>
+
+</form>
+
+<div id="admin-products" class="k-admin-table"></div>
+
 <h2>Custom orders</h2><div id="admin-custom"></div>
 <h2>Coupons</h2><form id="coupon-form" class="k-form-grid"><input id="cp-code" placeholder="Code" required><select id="cp-type"><option value="percent">Percent</option><option value="flat">Flat ₹</option></select><input id="cp-value" type="number" min="1" placeholder="Value" required><input id="cp-min" type="number" min="0" placeholder="Minimum order"><input id="cp-label" placeholder="Label"><button class="k-order-btn">Create Coupon</button></form><div id="coupon-list"></div>
 </section></main>
@@ -1206,6 +1257,123 @@ async function(id,status){
 
   }
 };
+
+
+/* =========================================================
+   ADD NEW PRODUCT
+   ========================================================= */
+
+$('show-add-product').addEventListener('click', () => {
+  $('add-product-form').hidden = false;
+});
+
+$('cancel-add-product').addEventListener('click', () => {
+  $('add-product-form').reset();
+  $('add-product-form').hidden = true;
+  $('product-form-message').textContent = '';
+});
+
+
+$('add-product-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const message = $('product-form-message');
+  message.textContent = 'Saving product...';
+
+  try {
+    const name = $('new-product-name').value.trim();
+    const category = $('new-product-category').value.trim();
+    const imageUrl = $('new-product-image-url').value.trim();
+    const file = $('new-product-file').files[0];
+
+    const price = Number($('new-product-price').value);
+    const stock = Number($('new-product-stock').value);
+
+    let image = imageUrl;
+
+    // Upload laptop photo to Cloudinary if selected
+    if (file) {
+      const allowedTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/webp'
+      ];
+
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error('Please select a JPG, PNG or WEBP image.');
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error('Image size must be below 5 MB.');
+      }
+
+      message.textContent = 'Uploading photo...';
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'kashoria_products');
+
+      const uploadResponse = await fetch(
+        'https://api.cloudinary.com/v1_1/pxzxtobu/image/upload',
+        {
+          method: 'POST',
+          body: formData
+        }
+      );
+
+      const uploadData = await uploadResponse.json();
+
+      if (!uploadResponse.ok) {
+        throw new Error(
+          uploadData.error?.message || 'Photo upload failed.'
+        );
+      }
+
+      image = uploadData.secure_url;
+    }
+
+    if (!image) {
+      throw new Error('Please upload a photo or enter an image URL.');
+    }
+
+    if (!name || !category || !Number.isFinite(price) ||
+        price < 0 || !Number.isInteger(stock) || stock < 0) {
+      throw new Error('Please enter valid product details.');
+    }
+
+    const id = name.toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '') + '-' + Date.now();
+
+    message.textContent = 'Saving product...';
+
+    await api.request('/api/products', {
+      method: 'POST',
+      body: JSON.stringify({
+        id,
+        name,
+        category,
+        image,
+        price,
+        stock,
+        badge: $('new-product-badge').value.trim(),
+        description: $('new-product-description').value.trim(),
+        rating: 5,
+        options: []
+      })
+    });
+
+    message.textContent = 'Product added successfully!';
+    e.target.reset();
+    e.target.hidden = true;
+
+    await load();
+
+  } catch (error) {
+    message.textContent =
+      error.message || 'Could not add product.';
+  }
+});
 
 
 /* =========================================================

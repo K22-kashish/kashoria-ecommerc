@@ -1,10 +1,10 @@
 {
-  "total_product_images": 88,
+  "total_product_images": 89,
   "categories": {
     "bagcharms": 7,
     "bouquets": 9,
     "flowers": 9,
-    "hairaccessories": 15,
+    "hairaccessories": 16,
     "homedecor": 1,
     "keychains": 32,
     "phonecases": 3,
